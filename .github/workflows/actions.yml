@@ -1,6 +1,6 @@
 on:
   pull_request:
-  type: [opened, synchronize]
+    type: [opened, synchronize]
 
 jobs:
   checkstyle:
