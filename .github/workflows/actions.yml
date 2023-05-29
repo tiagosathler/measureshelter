@@ -1,4 +1,3 @@
-name: checkstyle
 on:
   pull_request:
   type: [opened, synchronize]
