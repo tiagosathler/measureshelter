@@ -1,0 +1,39 @@
+name: checkstyle
+on:
+  pull_request:
+  type: [opened, synchronize]
+
+jobs:
+  checkstyle:
+    name: Checkstyle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project repository
+        uses: actions/checkout@v3
+
+      - name: Run Checkstyle
+        uses: dbelyaev/action-checkstyle@v0.7.5
+        id: checkstyle-evaluator
+        with:
+          github_token: ${{ secrets.github_token }}
+          checkstyle_version: 10.6.0
+          reporter: github-pr-check
+          level: error
+          filter_mode: nofilter
+          fail_on_error: true
+
+  evaluator:
+    needs: [checkstyle]
+    name: Maven Test evaluator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project repository
+        uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --update-snapshots --fail-fast verify
