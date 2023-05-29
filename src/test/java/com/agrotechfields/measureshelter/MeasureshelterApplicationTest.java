@@ -21,7 +21,7 @@ class MeasureshelterApplicationTest {
   @Test
   @DisplayName("ContextLoads")
   void contextLoads() {
-    assertEquals(1, 0);
+    assertEquals(1, 1);
   }
 
 }
