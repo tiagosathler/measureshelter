@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * The Class Isle.
  */
 @Document(collection = "isles")
-
 public class Isle {
 
   /** The id. */
@@ -236,6 +235,4 @@ public class Isle {
     Isle other = (Isle) obj;
     return Objects.equals(serialNumber, other.serialNumber);
   }
-
-
 }
