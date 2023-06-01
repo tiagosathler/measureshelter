@@ -2,6 +2,7 @@ package com.agrotechfields.measureshelter.exception.handler;
 
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
+import com.agrotechfields.measureshelter.exception.NotPermittedException;
 import com.agrotechfields.measureshelter.exception.payload.ErrorPayload;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,19 @@ public class ExceptionHandlerController {
   }
 
   /**
+   * Handle not permitted.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(NotPermittedException.class)
+  public ResponseEntity<ErrorPayload> handleNotPermitted(NotPermittedException e) {
+    HttpStatus httpStatus = HttpStatus.NOT_ACCEPTABLE;
+    String msg = e.getMessage() + " is not permitted or not working to do this";
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
    * Handle generic error.
    *
    * @param e the e
@@ -70,7 +84,6 @@ public class ExceptionHandlerController {
     e.printStackTrace();
     return buildResponse(msg, httpStatus);
   }
-
 
   /**
    * Builds the response.
