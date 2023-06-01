@@ -1,6 +1,8 @@
 package com.agrotechfields.measureshelter.dto;
 
 import com.agrotechfields.measureshelter.domain.Isle;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import org.bson.codecs.ObjectIdGenerator;
 
 /**
@@ -22,44 +25,38 @@ public class IsleDto implements Serializable {
   private String id;
 
   /** The serial number. */
-  @NotNull(message = "cannot be null")
+  @NotNull
   @Pattern(regexp = "^[A-Z0-9]{10}$",
       message = "must be 10 digits including numbers and capital letters")
   private String serialNumber;
 
   /** The password. */
-  @NotNull(message = "cannot be null")
-  @NotBlank(message = "cannot be empty")
+  @NotNull
+  @NotBlank
   private String password;
 
-  /**
-   * The latitude. Regex from
-   * https://gist.github.com/DebkanchanSamadder/1eb07af7d9595256535c5c71ea79d66e
-   */
-  @NotNull(message = "cannot be null")
-  @Pattern(regexp = "^-?([0-8]?[0-9]|90)(\\.[0-9]{1,10})?$",
-      message = "must be between -90.0 to 90.0")
-  private String latitude;
+  /** The latitude (degrees). */
+  @NotNull
+  @DecimalMin(value = "-90", inclusive = false)
+  @DecimalMax(value = "90", inclusive = false)
+  private BigDecimal latitude;
 
-  /**
-   * The longitude. Regex from
-   * https://gist.github.com/DebkanchanSamadder/1eb07af7d9595256535c5c71ea79d66e
-   */
-  @NotNull(message = "cannot be null")
-  @Pattern(regexp = "^-?([0-9]{1,2}|1[0-7][0-9]|180)(\\.[0-9]{1,10})$",
-      message = "must be between -180.0 to 180.0")
-  private String longitude;
+  /** The longitude (degrees). */
+  @NotNull
+  @DecimalMin(value = "-180", inclusive = false)
+  @DecimalMax(value = "180")
+  private BigDecimal longitude;
 
-  /** The altitude. */
-  @Positive(message = "must be positive")
-  private Double altitude;
+  /** The altitude (meters). */
+  @Positive
+  private BigDecimal altitude;
 
-  /** The is it working. */
+  /** The is it working (boolean). */
   private Boolean isItWorking = true;
 
-  /** The sampling interval. */
-  @Min(value = 1, message = "must be between 1 to 3600 minutes")
-  @Max(value = 3600, message = "must be between 1 to 3600 minutes")
+  /** The sampling interval (minutes). */
+  @Min(1)
+  @Max(3600)
   private Integer samplingInterval = 5;
 
   /**
@@ -80,8 +77,8 @@ public class IsleDto implements Serializable {
    * @param isItWorking the is it working
    * @param samplingInterval the sampling interval
    */
-  public IsleDto(String serialNumber, String password, String latitude, String longitude,
-      Double altitude, Boolean isItWorking, Integer samplingInterval) {
+  public IsleDto(String serialNumber, String password, BigDecimal latitude, BigDecimal longitude,
+      BigDecimal altitude, Boolean isItWorking, Integer samplingInterval) {
     this();
     this.serialNumber = serialNumber;
     this.password = password;
@@ -143,7 +140,7 @@ public class IsleDto implements Serializable {
    *
    * @return the latitude
    */
-  public String getLatitude() {
+  public BigDecimal getLatitude() {
     return latitude;
   }
 
@@ -152,7 +149,7 @@ public class IsleDto implements Serializable {
    *
    * @param latitude the new latitude
    */
-  public void setLatitude(String latitude) {
+  public void setLatitude(BigDecimal latitude) {
     this.latitude = latitude;
   }
 
@@ -161,7 +158,7 @@ public class IsleDto implements Serializable {
    *
    * @return the longitude
    */
-  public String getLongitude() {
+  public BigDecimal getLongitude() {
     return longitude;
   }
 
@@ -170,7 +167,7 @@ public class IsleDto implements Serializable {
    *
    * @param longitude the new longitude
    */
-  public void setLongitude(String longitude) {
+  public void setLongitude(BigDecimal longitude) {
     this.longitude = longitude;
   }
 
@@ -179,7 +176,7 @@ public class IsleDto implements Serializable {
    *
    * @return the altitude
    */
-  public Double getAltitude() {
+  public BigDecimal getAltitude() {
     return altitude;
   }
 
@@ -188,7 +185,7 @@ public class IsleDto implements Serializable {
    *
    * @param altitude the new altitude
    */
-  public void setAltitude(Double altitude) {
+  public void setAltitude(BigDecimal altitude) {
     this.altitude = altitude;
   }
 
