@@ -91,6 +91,20 @@ public class IsleService {
   }
 
   /**
+   * Toogle working mode.
+   *
+   * @param id the id
+   * @return true, if successful
+   * @throws EntityNotFoundException the entity not found exception
+   */
+  public boolean toogleWorkingMode(String id) throws EntityNotFoundException {
+    Isle isle = findIsleById(id);
+    isle.setIsItWorking(!isle.getIsItWorking());
+    repository.save(isle);
+    return isle.getIsItWorking();
+  }
+
+  /**
    * Delete isle by id.
    *
    * @param id the id
@@ -100,5 +114,4 @@ public class IsleService {
     Isle isle = findIsleById(id);
     repository.delete(isle);
   }
-
 }

@@ -7,11 +7,14 @@ import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.service.IsleService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -100,6 +103,22 @@ public class IsleController {
       @RequestBody @Valid IsleDto isleDto) throws EntityNotFoundException {
     Isle isle = service.updateIsleById(id, isleDto);
     return ResponseEntity.accepted().body(isle);
+  }
+
+  /**
+   * Toggle.
+   *
+   * @param id the id
+   * @return the response entity
+   * @throws EntityNotFoundException the entity not found exception
+   */
+  @PatchMapping("/toggle/{id}")
+  public ResponseEntity<Map<String, Boolean>> toggle(@PathVariable("id") String id)
+      throws EntityNotFoundException {
+    Boolean mode = service.toogleWorkingMode(id);
+    Map<String, Boolean> response = new HashMap<>();
+    response.put("isItWorking", mode);
+    return ResponseEntity.accepted().body(response);
   }
 
   /**
