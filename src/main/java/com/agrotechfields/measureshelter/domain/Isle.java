@@ -1,5 +1,6 @@
 package com.agrotechfields.measureshelter.domain;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,14 +21,14 @@ public class Isle {
   /** The password. */
   private String password;
 
-  /** The latidude. */
-  private String latidude;
+  /** The latitude. */
+  private BigDecimal latitude;
 
   /** The longitude. */
-  private String longitude;
+  private BigDecimal longitude;
 
   /** The altitude. */
-  private Double altitude;
+  private BigDecimal altitude;
 
   /** The is it working. */
   private Boolean isItWorking;
@@ -46,18 +47,18 @@ public class Isle {
    * @param id the id
    * @param serialNumber the serial number
    * @param password the password
-   * @param latidude the latidude
+   * @param latitude the latitude
    * @param longitude the longitude
    * @param altitude the altitude
    * @param isItWorking the is it working
    * @param samplingInterval the sampling interval
    */
-  public Isle(String id, String serialNumber, String password, String latidude, String longitude,
-      Double altitude, Boolean isItWorking, Integer samplingInterval) {
+  public Isle(String id, String serialNumber, String password, BigDecimal latitude,
+      BigDecimal longitude, BigDecimal altitude, Boolean isItWorking, Integer samplingInterval) {
     this.id = id;
     this.serialNumber = serialNumber;
     this.password = password;
-    this.latidude = latidude;
+    this.latitude = latitude;
     this.longitude = longitude;
     this.altitude = altitude;
     this.isItWorking = isItWorking;
@@ -119,21 +120,21 @@ public class Isle {
   }
 
   /**
-   * Gets the latidude.
+   * Gets the latitude.
    *
-   * @return the latidude
+   * @return the latitude
    */
-  public String getLatidude() {
-    return latidude;
+  public BigDecimal getLatitude() {
+    return latitude;
   }
 
   /**
-   * Sets the latidude.
+   * Sets the latitude.
    *
-   * @param latidude the new latidude
+   * @param latidude the new latitude
    */
-  public void setLatidude(String latidude) {
-    this.latidude = latidude;
+  public void setLatidude(BigDecimal latitude) {
+    this.latitude = latitude;
   }
 
   /**
@@ -141,7 +142,7 @@ public class Isle {
    *
    * @return the longitude
    */
-  public String getLongitude() {
+  public BigDecimal getLongitude() {
     return longitude;
   }
 
@@ -150,7 +151,7 @@ public class Isle {
    *
    * @param longitude the new longitude
    */
-  public void setLongitude(String longitude) {
+  public void setLongitude(BigDecimal longitude) {
     this.longitude = longitude;
   }
 
@@ -159,7 +160,7 @@ public class Isle {
    *
    * @return the altitude
    */
-  public Double getAltitude() {
+  public BigDecimal getAltitude() {
     return altitude;
   }
 
@@ -168,7 +169,7 @@ public class Isle {
    *
    * @param altitude the new altitude
    */
-  public void setAltitude(Double altitude) {
+  public void setAltitude(BigDecimal altitude) {
     this.altitude = altitude;
   }
 
