@@ -1,0 +1,99 @@
+package com.agrotechfields.measureshelter.dto;
+
+import com.agrotechfields.measureshelter.domain.Isle;
+import java.io.Serializable;
+
+/**
+ * The Class IsleResponseDefaultDto.
+ */
+public class IsleResponseDefaultDto implements Serializable {
+
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 1L;
+
+  /** The id. */
+  private String id;
+
+  /** The serial number. */
+  private String serialNumber;
+
+  /** The latitude. */
+  private String latitude;
+
+  /** The longitude. */
+  private String longitude;
+
+  /** The is it working. */
+  private Boolean isItWorking;
+
+  /** The sampling interval. */
+  private Integer samplingInterval;
+
+  /**
+   * Instantiates a new isle response default dto.
+   *
+   * @param isle the isle
+   */
+  public IsleResponseDefaultDto(Isle isle) {
+    this.id = isle.getId();
+    this.serialNumber = isle.getSerialNumber();
+    this.latitude = isle.getLatidude();
+    this.longitude = isle.getLongitude();
+    this.isItWorking = isle.getIsItWorking();
+    this.samplingInterval = isle.getSamplingInterval();
+  }
+
+  /**
+   * Gets the id.
+   *
+   * @return the id
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Gets the serial number.
+   *
+   * @return the serial number
+   */
+  public String getSerialNumber() {
+    return serialNumber;
+  }
+
+  /**
+   * Gets the latitude.
+   *
+   * @return the latitude
+   */
+  public String getLatitude() {
+    return latitude;
+  }
+
+  /**
+   * Gets the longitude.
+   *
+   * @return the longitude
+   */
+  public String getLongitude() {
+    return longitude;
+  }
+
+  /**
+   * Gets the checks if is it working.
+   *
+   * @return the checks if is it working
+   */
+  public Boolean getIsItWorking() {
+    return isItWorking;
+  }
+
+  /**
+   * Gets the sampling interval.
+   *
+   * @return the sampling interval
+   */
+  public Integer getSamplingInterval() {
+    return samplingInterval;
+  }
+}
