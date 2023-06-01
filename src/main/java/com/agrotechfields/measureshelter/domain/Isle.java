@@ -131,7 +131,7 @@ public class Isle {
   /**
    * Sets the latitude.
    *
-   * @param latidude the new latitude
+   * @param latitude the new latitude
    */
   public void setLatidude(BigDecimal latitude) {
     this.latitude = latitude;
