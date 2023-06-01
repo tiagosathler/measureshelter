@@ -2,6 +2,7 @@ package com.agrotechfields.measureshelter.controller;
 
 import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.dto.IsleDto;
+import com.agrotechfields.measureshelter.dto.IsleResponseDefaultDto;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.service.IsleService;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +29,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * The Class IsleController.
  */
 @RestController
-@RequestMapping(value = "/isle")
+@RequestMapping(value = "${isle.endpoint}")
 public class IsleController {
+
+  @Value("${isle.endpoint}")
+  private String endpoint;
 
   /** The service. */
   @Autowired
@@ -40,9 +45,9 @@ public class IsleController {
    * @return the response entity
    */
   @GetMapping
-  public ResponseEntity<List<Isle>> findAll() {
+  public ResponseEntity<List<IsleResponseDefaultDto>> findAll() {
     List<Isle> isles = service.findAllIsles();
-    return ResponseEntity.ok().body(isles);
+    return ResponseEntity.ok().body(convertToDto(isles));
   }
 
   /**
@@ -53,11 +58,10 @@ public class IsleController {
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/{id}")
-  public ResponseEntity<Isle> findById(@PathVariable("id") String id)
+  public ResponseEntity<IsleResponseDefaultDto> findById(@PathVariable("id") String id)
       throws EntityNotFoundException {
-    System.out.println(id);
     Isle isle = service.findIsleById(id);
-    return ResponseEntity.ok().body(isle);
+    return ResponseEntity.ok().body(convertToDto(isle));
   }
 
   /**
@@ -68,10 +72,10 @@ public class IsleController {
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/serial/{serialNumber}")
-  public ResponseEntity<Isle> findBySerialNumber(@PathVariable("serialNumber") String serialNumber)
-      throws EntityNotFoundException {
+  public ResponseEntity<IsleResponseDefaultDto> findBySerialNumber(
+      @PathVariable("serialNumber") String serialNumber) throws EntityNotFoundException {
     Isle isle = service.findIsleBySerialNumber(serialNumber);
-    return ResponseEntity.ok().body(isle);
+    return ResponseEntity.ok().body(convertToDto(isle));
   }
 
   /**
@@ -82,12 +86,10 @@ public class IsleController {
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   @PostMapping
-  public ResponseEntity<Isle> create(@RequestBody @Valid IsleDto isleDto)
+  public ResponseEntity<IsleResponseDefaultDto> create(@RequestBody @Valid IsleDto isleDto)
       throws EntityAlreadyExistsException {
     Isle isle = service.createIsle(isleDto);
-    URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-        .buildAndExpand(isle.getId()).toUri();
-    return ResponseEntity.created(uri).body(isle);
+    return ResponseEntity.created(buildUri(isle.getId())).body(convertToDto(isle));
   }
 
   /**
@@ -99,10 +101,10 @@ public class IsleController {
    * @throws EntityNotFoundException the entity not found exception
    */
   @PutMapping("/{id}")
-  public ResponseEntity<Isle> update(@PathVariable("id") String id,
+  public ResponseEntity<IsleResponseDefaultDto> update(@PathVariable("id") String id,
       @RequestBody @Valid IsleDto isleDto) throws EntityNotFoundException {
     Isle isle = service.updateIsleById(id, isleDto);
-    return ResponseEntity.accepted().body(isle);
+    return ResponseEntity.accepted().body(convertToDto(isle));
   }
 
   /**
@@ -133,5 +135,39 @@ public class IsleController {
       throws EntityNotFoundException {
     service.deleteIsleById(id);
     return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * Builds the uri.
+   *
+   * @param id the id
+   * @return the uri
+   */
+  private URI buildUri(String id) {
+    return ServletUriComponentsBuilder
+        .fromCurrentContextPath()
+        .path(endpoint + "/{id}")
+        .buildAndExpand(id)
+        .toUri();
+  }
+
+  /**
+   * Convert to dto.
+   *
+   * @param isles the isles
+   * @return the list
+   */
+  private List<IsleResponseDefaultDto> convertToDto(List<Isle> isles) {
+    return isles.stream().map(IsleResponseDefaultDto::new).toList();
+  }
+
+  /**
+   * Convert to dto.
+   *
+   * @param isle the isle
+   * @return the isle response default dto
+   */
+  private IsleResponseDefaultDto convertToDto(Isle isle) {
+    return new IsleResponseDefaultDto(isle);
   }
 }
