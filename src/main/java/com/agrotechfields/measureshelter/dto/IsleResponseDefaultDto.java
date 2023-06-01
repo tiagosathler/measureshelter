@@ -2,6 +2,7 @@ package com.agrotechfields.measureshelter.dto;
 
 import com.agrotechfields.measureshelter.domain.Isle;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * The Class IsleResponseDefaultDto.
@@ -18,10 +19,10 @@ public class IsleResponseDefaultDto implements Serializable {
   private String serialNumber;
 
   /** The latitude. */
-  private String latitude;
+  private BigDecimal latitude;
 
   /** The longitude. */
-  private String longitude;
+  private BigDecimal longitude;
 
   /** The is it working. */
   private Boolean isItWorking;
@@ -37,7 +38,7 @@ public class IsleResponseDefaultDto implements Serializable {
   public IsleResponseDefaultDto(Isle isle) {
     this.id = isle.getId();
     this.serialNumber = isle.getSerialNumber();
-    this.latitude = isle.getLatidude();
+    this.latitude = isle.getLatitude();
     this.longitude = isle.getLongitude();
     this.isItWorking = isle.getIsItWorking();
     this.samplingInterval = isle.getSamplingInterval();
@@ -66,7 +67,7 @@ public class IsleResponseDefaultDto implements Serializable {
    *
    * @return the latitude
    */
-  public String getLatitude() {
+  public BigDecimal getLatitude() {
     return latitude;
   }
 
@@ -75,7 +76,7 @@ public class IsleResponseDefaultDto implements Serializable {
    *
    * @return the longitude
    */
-  public String getLongitude() {
+  public BigDecimal getLongitude() {
     return longitude;
   }
 
