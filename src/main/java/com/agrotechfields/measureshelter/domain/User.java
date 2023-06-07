@@ -44,23 +44,22 @@ public class User implements UserDetails {
   /** The enabled. */
   private boolean enabled = true;
 
-
   /**
    * Instantiates a new user.
    */
   public User() {
-    this.id = new ObjectId();
   }
 
   /**
    * Instantiates a new user.
    *
+   * @param id the id
    * @param username the username
    * @param password the password
    * @param role the role
    */
-  public User(String username, String password, Role role) {
-    this();
+  public User(ObjectId id, String username, String password, Role role) {
+    this.id = id;
     this.username = username;
     this.password = password;
     this.role = role;
@@ -73,6 +72,15 @@ public class User implements UserDetails {
    */
   public ObjectId getId() {
     return id;
+  }
+
+  /**
+   * Sets the id.
+   *
+   * @param id the new id
+   */
+  public void setId(ObjectId id) {
+    this.id = id;
   }
 
   /**
