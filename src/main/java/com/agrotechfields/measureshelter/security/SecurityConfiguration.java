@@ -1,5 +1,6 @@
 package com.agrotechfields.measureshelter.security;
 
+import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,33 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+  /** The Constant HEALTH. */
+  private static final String HEALTH = "/actuator/health";
+  
+  /** The Constant ACTUATOR. */
+  private static final String ACTUATOR = "/actuator/**";
+  
+  /** The Constant LOGIN. */
+  private static final String LOGIN = "/login";
+  
+  /** The Constant USER. */
+  private static final String USER = "/user/**";
+  
+  /** The Constant ISLE. */
+  private static final String ISLE = "/isle/**";
+  
+  /** The Constant MEASURE. */
+  private static final String MEASURE = "/measure/**";
+
+  /** The Constant ROLE_ADMIN. */
+  private static final String ROLE_ADMIN = Role.ROLE_ADMIN.name();
+  
+  /** The Constant ROLE_USER. */
+  private static final String ROLE_USER = Role.ROLE_USER.name();
+  
+  /** The Constant ROLE_ISLE. */
+  private static final String ROLE_ISLE = Role.ROLE_ISLE.name();
+
   /**
    * Security filter chain.
    *
@@ -38,13 +66,40 @@ public class SecurityConfiguration {
         .cors(cors -> cors.disable())
         .httpBasic(h -> h.disable())
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(requests -> {
-          requests.requestMatchers(HttpMethod.POST, "/login").permitAll();
-          requests.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
-          requests.anyRequest().authenticated();
+        .authorizeHttpRequests(req -> {
+          // Permit all for HEALTH and LOGIN endpoints:
+          req.requestMatchers(HttpMethod.GET, HEALTH).permitAll();
+          req.requestMatchers(HttpMethod.POST, LOGIN).permitAll();
+
+          // Security authority for ACTUATOR endpoints:
+          req.requestMatchers(ACTUATOR).hasAuthority(ROLE_ADMIN);
+
+          // Security authorities for USER endpoints:
+          req.requestMatchers(HttpMethod.POST, USER).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.GET, USER).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
+          req.requestMatchers(HttpMethod.PUT, USER).fullyAuthenticated();
+          req.requestMatchers(HttpMethod.PATCH, USER).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.DELETE, USER).hasAuthority(ROLE_ADMIN);
+
+          // Security authorities for ISLE endpoints:
+          req.requestMatchers(HttpMethod.POST, ISLE).hasAuthority(ROLE_ISLE);
+          req.requestMatchers(HttpMethod.GET, ISLE).fullyAuthenticated();
+          req.requestMatchers(HttpMethod.PUT, ISLE).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.PATCH, ISLE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
+          req.requestMatchers(HttpMethod.DELETE, ISLE).hasAuthority(ROLE_ADMIN);
+          
+          // Security authorities for MEASURE endpoints:
+          req.requestMatchers(HttpMethod.POST, MEASURE).hasAuthority(ROLE_ISLE);
+          req.requestMatchers(HttpMethod.GET, MEASURE).fullyAuthenticated();
+          req.requestMatchers(HttpMethod.PUT, MEASURE).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.DELETE, MEASURE).hasAuthority(ROLE_ADMIN);
+
+          // Security any authorities for others endpoints:
+          req.anyRequest().authenticated();
         })
         .userDetailsService(userService)
-        .addFilterBefore(jwtSecurityFilter, UsernamePasswordAuthenticationFilter.class).build();
+        .addFilterBefore(jwtSecurityFilter, UsernamePasswordAuthenticationFilter.class)
+        .build();
   }
 
   /**
