@@ -44,23 +44,22 @@ public class User implements UserDetails {
   /** The enabled. */
   private boolean enabled = true;
 
-
   /**
    * Instantiates a new user.
    */
   public User() {
-    this.id = new ObjectId();
   }
 
   /**
    * Instantiates a new user.
    *
+   * @param id the id
    * @param username the username
    * @param password the password
    * @param role the role
    */
-  public User(String username, String password, Role role) {
-    this();
+  public User(ObjectId id, String username, String password, Role role) {
+    this.id = id;
     this.username = username;
     this.password = password;
     this.role = role;
@@ -76,6 +75,15 @@ public class User implements UserDetails {
   }
 
   /**
+   * Sets the id.
+   *
+   * @param id the new id
+   */
+  public void setId(ObjectId id) {
+    this.id = id;
+  }
+
+  /**
    * Gets the username.
    *
    * @return the username
@@ -86,6 +94,15 @@ public class User implements UserDetails {
   }
 
   /**
+   * Sets the username.
+   *
+   * @param username the new username
+   */
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  /**
    * Gets the password.
    *
    * @return the password
@@ -93,6 +110,15 @@ public class User implements UserDetails {
   @Override
   public String getPassword() {
     return password;
+  }
+
+  /**
+   * Sets the password.
+   *
+   * @param password the new password
+   */
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   /**
@@ -114,6 +140,15 @@ public class User implements UserDetails {
     return role;
   }
 
+  /**
+   * Sets the role.
+   *
+   * @param role the new role
+   */
+  public void setRole(Role role) {
+    this.role = role;
+  }
+  
   /**
    * Checks if is account non expired.
    *

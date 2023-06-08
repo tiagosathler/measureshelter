@@ -2,15 +2,20 @@ package com.agrotechfields.measureshelter.exception.handler;
 
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
+import com.agrotechfields.measureshelter.exception.InvalidIdException;
 import com.agrotechfields.measureshelter.exception.NotPermittedException;
 import com.agrotechfields.measureshelter.exception.payload.ErrorPayload;
+import com.auth0.jwt.exceptions.IncorrectClaimException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -56,9 +61,22 @@ public class ExceptionHandlerController {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorPayload> handleMethodArgumentNotValid(
       MethodArgumentNotValidException e) {
-    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
     FieldError fd = e.getFieldErrors().get(0);
     String msg = fd.getField() + ": " + fd.getDefaultMessage();
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
+   * Handle invalid id.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(InvalidIdException.class)
+  public ResponseEntity<ErrorPayload> handleInvalidId(InvalidIdException e) {
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    String msg = e.getMessage() + " is invalid Id";
     return buildResponse(msg, httpStatus);
   }
 
@@ -70,8 +88,8 @@ public class ExceptionHandlerController {
    */
   @ExceptionHandler(NotPermittedException.class)
   public ResponseEntity<ErrorPayload> handleNotPermitted(NotPermittedException e) {
-    HttpStatus httpStatus = HttpStatus.NOT_ACCEPTABLE;
-    String msg = e.getMessage() + " is not permitted or not working to do this";
+    HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+    String msg = e.getMessage() + " does not have permission to do this";
     return buildResponse(msg, httpStatus);
   }
 
@@ -83,8 +101,21 @@ public class ExceptionHandlerController {
    */
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<ErrorPayload> handleBadCredentials(BadCredentialsException e) {
-    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-    String msg = "Invalid username or password";
+    HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+    String msg = e.getMessage();
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
+   * Handle disabled user.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(DisabledException.class)
+  public ResponseEntity<ErrorPayload> handleDisabledUser(DisabledException e) {
+    HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+    String msg = e.getMessage();
     return buildResponse(msg, httpStatus);
   }
 
@@ -107,10 +138,38 @@ public class ExceptionHandlerController {
    * @param e the e
    * @return the response entity
    */
-  @ExceptionHandler({SignatureVerificationException.class, JWTDecodeException.class})
+  @ExceptionHandler({SignatureVerificationException.class, JWTDecodeException.class,
+      IncorrectClaimException.class})
   public ResponseEntity<ErrorPayload> handleInvalidToken(Exception e) {
     HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
     String msg = "Invalid token";
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
+   * Handle username not found.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(UsernameNotFoundException.class)
+  public ResponseEntity<ErrorPayload> handleUsernameNotFound(UsernameNotFoundException e) {
+    HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+    String msg = "Username '" + e.getMessage() + "' provided by this token not found";
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
+   * Handle http request method not supported.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<ErrorPayload> handleHttpRequestMethodNotSupported(
+      HttpRequestMethodNotSupportedException e) {
+    HttpStatus httpStatus = HttpStatus.NOT_IMPLEMENTED;
+    String msg = e.getMessage();
     return buildResponse(msg, httpStatus);
   }
 
