@@ -94,6 +94,15 @@ public class User implements UserDetails {
   }
 
   /**
+   * Sets the username.
+   *
+   * @param username the new username
+   */
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  /**
    * Gets the password.
    *
    * @return the password
@@ -101,6 +110,15 @@ public class User implements UserDetails {
   @Override
   public String getPassword() {
     return password;
+  }
+
+  /**
+   * Sets the password.
+   *
+   * @param password the new password
+   */
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   /**
@@ -122,6 +140,15 @@ public class User implements UserDetails {
     return role;
   }
 
+  /**
+   * Sets the role.
+   *
+   * @param role the new role
+   */
+  public void setRole(Role role) {
+    this.role = role;
+  }
+  
   /**
    * Checks if is account non expired.
    *
