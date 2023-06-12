@@ -24,28 +24,31 @@ public class SecurityConfiguration {
 
   /** The Constant HEALTH. */
   private static final String HEALTH = "/actuator/health";
-  
+
   /** The Constant ACTUATOR. */
   private static final String ACTUATOR = "/actuator/**";
-  
+
   /** The Constant LOGIN. */
   private static final String LOGIN = "/login";
-  
+
   /** The Constant USER. */
   private static final String USER = "/user/**";
-  
+
+  /** The Constant USER_ISLE. */
+  private static final String USER_ISLE = "/user/isle/**";
+
   /** The Constant ISLE. */
   private static final String ISLE = "/isle/**";
-  
+
   /** The Constant MEASURE. */
   private static final String MEASURE = "/measure/**";
 
   /** The Constant ROLE_ADMIN. */
   private static final String ROLE_ADMIN = Role.ROLE_ADMIN.name();
-  
+
   /** The Constant ROLE_USER. */
   private static final String ROLE_USER = Role.ROLE_USER.name();
-  
+
   /** The Constant ROLE_ISLE. */
   private static final String ROLE_ISLE = Role.ROLE_ISLE.name();
 
@@ -77,17 +80,18 @@ public class SecurityConfiguration {
           // Security authorities for USER endpoints:
           req.requestMatchers(HttpMethod.POST, USER).hasAuthority(ROLE_ADMIN);
           req.requestMatchers(HttpMethod.GET, USER).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
-          req.requestMatchers(HttpMethod.PUT, USER).fullyAuthenticated();
+          req.requestMatchers(HttpMethod.PUT, USER_ISLE).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.PUT, USER).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
           req.requestMatchers(HttpMethod.PATCH, USER).hasAuthority(ROLE_ADMIN);
           req.requestMatchers(HttpMethod.DELETE, USER).hasAuthority(ROLE_ADMIN);
 
           // Security authorities for ISLE endpoints:
-          req.requestMatchers(HttpMethod.POST, ISLE).hasAuthority(ROLE_ISLE);
+          req.requestMatchers(HttpMethod.POST, ISLE).hasAuthority(ROLE_ADMIN);
           req.requestMatchers(HttpMethod.GET, ISLE).fullyAuthenticated();
           req.requestMatchers(HttpMethod.PUT, ISLE).hasAuthority(ROLE_ADMIN);
           req.requestMatchers(HttpMethod.PATCH, ISLE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
           req.requestMatchers(HttpMethod.DELETE, ISLE).hasAuthority(ROLE_ADMIN);
-          
+
           // Security authorities for MEASURE endpoints:
           req.requestMatchers(HttpMethod.POST, MEASURE).hasAuthority(ROLE_ISLE);
           req.requestMatchers(HttpMethod.GET, MEASURE).fullyAuthenticated();

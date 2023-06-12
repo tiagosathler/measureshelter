@@ -2,8 +2,10 @@ package com.agrotechfields.measureshelter.controller;
 
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
+import com.agrotechfields.measureshelter.dto.IsleUserDto;
 import com.agrotechfields.measureshelter.dto.UserDto;
 import com.agrotechfields.measureshelter.dto.UserResponseDto;
+import com.agrotechfields.measureshelter.exception.DivergentSerialNumberException;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.InvalidIdException;
@@ -49,7 +51,7 @@ public class UserController {
    *
    * @param userDto the user dto
    * @param isAdmin the is admin boolean parameter
-   * @return the response entity
+   * @return the response entity with new user
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   @PostMapping
@@ -63,22 +65,24 @@ public class UserController {
   /**
    * Register isle.
    *
-   * @param id the id
-   * @return the response entity
+   * @param registerIsleDto the register isle dto
+   * @return the response entity with new user (isle user)
    * @throws EntityAlreadyExistsException the entity already exists exception
    * @throws EntityNotFoundException the entity not found exception
+   * @throws DivergentSerialNumberException the divergent serial number exception
    */
-  @PostMapping("/isle/{id}")
-  public ResponseEntity<UserResponseDto> registerIsle(@PathVariable("id") String id)
-      throws EntityAlreadyExistsException, EntityNotFoundException {
-    User user = userService.registerIsleUser(id);
+  @PostMapping("/isle")
+  public ResponseEntity<UserResponseDto> registerIsle(
+      @RequestBody @Valid IsleUserDto registerIsleDto)
+      throws EntityAlreadyExistsException, EntityNotFoundException, DivergentSerialNumberException {
+    User user = userService.registerIsleUser(registerIsleDto);
     return ResponseEntity.created(buildUri(user.getId().toString())).body(convertToDto(user));
   }
 
   /**
    * Find all users.
    *
-   * @return the response entity
+   * @return the response entity with found users
    */
   @GetMapping
   public ResponseEntity<List<UserResponseDto>> findAll() {
@@ -90,7 +94,7 @@ public class UserController {
    * Find user by id.
    *
    * @param id the id
-   * @return the response entity
+   * @return the response entity with found user
    * @throws EntityNotFoundException the entity not found exception
    * @throws InvalidIdException the invalid id exception
    */
@@ -105,7 +109,7 @@ public class UserController {
    * Update context user.
    *
    * @param userDto the user dto
-   * @return the response entity
+   * @return the response entity with updated user
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   @PutMapping
@@ -116,10 +120,24 @@ public class UserController {
   }
 
   /**
+   * Update isle user.
+   *
+   * @param registerIsleDto the register isle dto
+   * @return the response entity with updated user (isle user)
+   * @throws EntityNotFoundException the entity not found exception
+   */
+  @PutMapping("/isle")
+  public ResponseEntity<UserResponseDto> updateIsleUser(
+      @RequestBody @Valid IsleUserDto registerIsleDto) throws EntityNotFoundException {
+    User user = userService.updateIsleUser(registerIsleDto);
+    return ResponseEntity.ok().body(convertToDto(user));
+  }
+
+  /**
    * Toggle role by user id.
    *
    * @param id the id
-   * @return the response entity
+   * @return the response entity with update role
    * @throws InvalidIdException the invalid id exception
    * @throws NotPermittedException the not permitted exception
    * @throws EntityNotFoundException the entity not found exception
@@ -137,7 +155,7 @@ public class UserController {
    * Toggle is enable by user id.
    *
    * @param id the id
-   * @return the response entity
+   * @return the response entity with updated enable
    * @throws InvalidIdException the invalid id exception
    * @throws NotPermittedException the not permitted exception
    * @throws EntityNotFoundException the entity not found exception
@@ -155,7 +173,7 @@ public class UserController {
    * Delete User by id.
    *
    * @param id the id
-   * @return the response entity
+   * @return the response entity without content
    * @throws InvalidIdException the invalid id exception
    * @throws EntityNotFoundException the entity not found exception
    */

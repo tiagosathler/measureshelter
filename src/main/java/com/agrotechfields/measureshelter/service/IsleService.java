@@ -1,10 +1,12 @@
 package com.agrotechfields.measureshelter.service;
 
 import com.agrotechfields.measureshelter.domain.Isle;
+import com.agrotechfields.measureshelter.domain.User;
 import com.agrotechfields.measureshelter.dto.IsleDto;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.repository.IsleRepository;
+import com.agrotechfields.measureshelter.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,10 @@ public class IsleService {
 
   /** The repository. */
   @Autowired
-  private IsleRepository repository;
+  private IsleRepository isleRepository;
+
+  @Autowired
+  private UserRepository userRepository;
 
   /**
    * Find all isles.
@@ -26,7 +31,7 @@ public class IsleService {
    * @return the list
    */
   public List<Isle> findAllIsles() {
-    return repository.findAll();
+    return isleRepository.findAll();
   }
 
   /**
@@ -37,7 +42,7 @@ public class IsleService {
    * @throws EntityNotFoundException the entity not found exception
    */
   public Isle findIsleById(String id) throws EntityNotFoundException {
-    Optional<Isle> foundIsle = repository.findById(id);
+    Optional<Isle> foundIsle = isleRepository.findById(id);
     if (foundIsle.isEmpty()) {
       throw new EntityNotFoundException("Isle");
     }
@@ -52,11 +57,11 @@ public class IsleService {
    * @throws EntityNotFoundException the entity not found exception
    */
   public Isle findIsleBySerialNumber(String serialNumber) throws EntityNotFoundException {
-    Isle isle = repository.findBySerialNumber(serialNumber);
-    if (isle == null) {
+    Optional<Isle> isle = isleRepository.findBySerialNumber(serialNumber);
+    if (isle.isEmpty()) {
       throw new EntityNotFoundException("Isle");
     }
-    return isle;
+    return isle.get();
   }
 
   /**
@@ -67,27 +72,44 @@ public class IsleService {
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   public Isle createIsle(IsleDto isleDto) throws EntityAlreadyExistsException {
-    Isle foundIsle = repository.findBySerialNumber(isleDto.getSerialNumber());
-    if (foundIsle != null) {
+    Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleDto.getSerialNumber());
+    if (foundIsle.isPresent()) {
       throw new EntityAlreadyExistsException("Isle");
     }
-    return repository.save(isleDto.isleFromDto());
+    return isleRepository.insert(isleDto.isleFromDto());
   }
 
   /**
    * Update isle.
    *
+   * @param id the id
    * @param isleDto the isle dto
    * @return the isle
    * @throws EntityNotFoundException the entity not found exception
+   * @throws EntityAlreadyExistsException the entity already exists exception
    */
-  public Isle updateIsleById(String id, IsleDto isleDto) throws EntityNotFoundException {
-    findIsleById(id);
+  public Isle updateIsleById(String id, IsleDto isleDto)
+      throws EntityNotFoundException, EntityAlreadyExistsException {
+    Isle isle = findIsleById(id);
 
-    Isle isle = isleDto.isleFromDto();
-    isle.setId(id);
+    Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleDto.getSerialNumber());
 
-    return repository.save(isle);
+    if (foundIsle.isPresent()) {
+      throw new EntityAlreadyExistsException("Isle");
+    }
+
+    Optional<User> foundUser = userRepository.findByUsername(isle.getSerialNumber());
+
+    if (foundUser.isPresent()) {
+      User user = foundUser.get();
+      user.setUsername(isleDto.getSerialNumber());
+      userRepository.save(user);
+    }
+
+    Isle isleUptaded = isleDto.isleFromDto();
+    isleUptaded.setId(id);
+
+    return isleRepository.save(isleUptaded);
   }
 
   /**
@@ -100,7 +122,7 @@ public class IsleService {
   public boolean toogleWorkingMode(String id) throws EntityNotFoundException {
     Isle isle = findIsleById(id);
     isle.setIsItWorking(!isle.getIsItWorking());
-    repository.save(isle);
+    isleRepository.save(isle);
     return isle.getIsItWorking();
   }
 
@@ -112,6 +134,12 @@ public class IsleService {
    */
   public void deleteIsleById(String id) throws EntityNotFoundException {
     Isle isle = findIsleById(id);
-    repository.delete(isle);
+    isleRepository.delete(isle);
+
+    Optional<User> foundUser = userRepository.findByUsername(isle.getSerialNumber());
+    if (foundUser.isPresent()) {
+      User user = foundUser.get();
+      userRepository.delete(user);
+    }
   }
 }

@@ -18,9 +18,6 @@ public class Isle {
   /** The serial number. */
   private String serialNumber;
 
-  /** The password. */
-  private String password;
-
   /** The latitude. */
   private BigDecimal latitude;
 
@@ -46,18 +43,16 @@ public class Isle {
    *
    * @param id the id
    * @param serialNumber the serial number
-   * @param password the password
    * @param latitude the latitude
    * @param longitude the longitude
    * @param altitude the altitude
    * @param isItWorking the is it working
    * @param samplingInterval the sampling interval
    */
-  public Isle(String id, String serialNumber, String password, BigDecimal latitude,
+  public Isle(String id, String serialNumber, BigDecimal latitude,
       BigDecimal longitude, BigDecimal altitude, Boolean isItWorking, Integer samplingInterval) {
     this.id = id;
     this.serialNumber = serialNumber;
-    this.password = password;
     this.latitude = latitude;
     this.longitude = longitude;
     this.altitude = altitude;
@@ -99,24 +94,6 @@ public class Isle {
    */
   public void setSerialNumber(String serialNumber) {
     this.serialNumber = serialNumber;
-  }
-
-  /**
-   * Gets the password.
-   *
-   * @return the password
-   */
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * Sets the password.
-   *
-   * @param password the new password
-   */
-  public void setPassword(String password) {
-    this.password = password;
   }
 
   /**
