@@ -3,7 +3,9 @@ package com.agrotechfields.measureshelter.service;
 import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
+import com.agrotechfields.measureshelter.dto.IsleUserDto;
 import com.agrotechfields.measureshelter.dto.UserDto;
+import com.agrotechfields.measureshelter.exception.DivergentSerialNumberException;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.InvalidIdException;
@@ -31,9 +33,11 @@ public class UserService implements UserDetailsService {
   @Autowired
   private UserRepository userRepository;
 
+  /** The isle repository. */
   @Autowired
   private IsleRepository isleRepository;
 
+  /** The password encoder. */
   @Autowired
   private PasswordEncoder passwordEncoder;
 
@@ -85,14 +89,15 @@ public class UserService implements UserDetailsService {
   /**
    * Register isle user.
    *
-   * @param isleId the isle id
+   * @param isleUserDto the register isle dto
    * @return the user
    * @throws EntityNotFoundException the entity not found exception
    * @throws EntityAlreadyExistsException the entity already exists exception
+   * @throws DivergentSerialNumberException the divergent serial number exception
    */
-  public User registerIsleUser(String isleId)
-      throws EntityNotFoundException, EntityAlreadyExistsException {
-    Optional<Isle> foundIsle = isleRepository.findById(isleId);
+  public User registerIsleUser(IsleUserDto isleUserDto)
+      throws EntityNotFoundException, EntityAlreadyExistsException, DivergentSerialNumberException {
+    Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleUserDto.getSerialNumber());
 
     if (foundIsle.isEmpty()) {
       throw new EntityNotFoundException("Isle");
@@ -102,10 +107,11 @@ public class UserService implements UserDetailsService {
     Optional<User> foundUser = userRepository.findByUsername(isle.getSerialNumber());
 
     if (foundUser.isPresent()) {
-      throw new EntityAlreadyExistsException("Isle user");
+      throw new EntityAlreadyExistsException(
+          "Isle user by the serial number '" + isle.getSerialNumber() + "'");
     }
 
-    String encodedPassword = passwordEncoder.encode(isle.getPassword());
+    String encodedPassword = passwordEncoder.encode(isleUserDto.getPassword());
 
     User user = new User(null, isle.getSerialNumber(), encodedPassword, Role.ROLE_ISLE);
     return userRepository.insert(user);
@@ -144,20 +150,43 @@ public class UserService implements UserDetailsService {
    * @return the user
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
-  public User updateContextUser(UserDto userDto)
-      throws EntityAlreadyExistsException {
+  public User updateContextUser(UserDto userDto) throws EntityAlreadyExistsException {
     Optional<User> foundUser = userRepository.findByUsername(userDto.getUsername());
 
     if (foundUser.isPresent()) {
       throw new EntityAlreadyExistsException("User");
     }
 
-    User contextUser =
-        (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    User contextUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     contextUser.setUsername(userDto.getUsername());
     contextUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
     return userRepository.save(contextUser);
+  }
+
+  /**
+   * Update isle user.
+   *
+   * @param isleUserDto the register isle dto
+   * @return the user
+   * @throws EntityNotFoundException the entity not found exception
+   */
+  public User updateIsleUser(IsleUserDto isleUserDto) throws EntityNotFoundException {
+    Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleUserDto.getSerialNumber());
+    Optional<User> foundUser = userRepository.findByUsername(isleUserDto.getSerialNumber());
+
+    if (foundIsle.isEmpty()) {
+      throw new EntityNotFoundException("Isle");
+    }
+
+    if (foundUser.isEmpty()) {
+      throw new EntityNotFoundException("Register this isle first. Isle as user");
+    }
+
+    User user = foundUser.get();
+    String encodedPassword = passwordEncoder.encode(isleUserDto.getPassword());
+    user.setPassword(encodedPassword);
+    return userRepository.save(user);
   }
 
   /**
