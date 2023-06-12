@@ -23,6 +23,9 @@ public class IsleResponseDefaultDto implements Serializable {
 
   /** The longitude. */
   private BigDecimal longitude;
+  
+  /** The altitude. */
+  private BigDecimal altitude;
 
   /** The is it working. */
   private Boolean isItWorking;
@@ -40,6 +43,7 @@ public class IsleResponseDefaultDto implements Serializable {
     this.serialNumber = isle.getSerialNumber();
     this.latitude = isle.getLatitude();
     this.longitude = isle.getLongitude();
+    this.altitude = isle.getAltitude();
     this.isItWorking = isle.getIsItWorking();
     this.samplingInterval = isle.getSamplingInterval();
   }
@@ -78,6 +82,15 @@ public class IsleResponseDefaultDto implements Serializable {
    */
   public BigDecimal getLongitude() {
     return longitude;
+  }
+
+  /**
+   * Gets the altitude.
+   *
+   * @return the altitude
+   */
+  public BigDecimal getAltitude() {
+    return altitude;
   }
 
   /**

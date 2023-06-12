@@ -5,7 +5,7 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
@@ -25,15 +25,10 @@ public class IsleDto implements Serializable {
   private String id;
 
   /** The serial number. */
-  @NotNull
+  @NotEmpty
   @Pattern(regexp = "^[A-Z0-9]{10}$",
       message = "must be 10 digits including numbers and capital letters")
   private String serialNumber;
-
-  /** The password. */
-  @NotNull
-  @NotBlank
-  private String password;
 
   /** The latitude (degrees). */
   @NotNull
@@ -70,18 +65,16 @@ public class IsleDto implements Serializable {
    * Instantiates a new isle dto.
    *
    * @param serialNumber the serial number
-   * @param password the password
    * @param latitude the latitude
    * @param longitude the longitude
    * @param altitude the altitude
    * @param isItWorking the is it working
    * @param samplingInterval the sampling interval
    */
-  public IsleDto(String serialNumber, String password, BigDecimal latitude, BigDecimal longitude,
+  public IsleDto(String serialNumber, BigDecimal latitude, BigDecimal longitude,
       BigDecimal altitude, Boolean isItWorking, Integer samplingInterval) {
     this();
     this.serialNumber = serialNumber;
-    this.password = password;
     this.latitude = latitude;
     this.longitude = longitude;
     this.altitude = altitude;
@@ -95,7 +88,7 @@ public class IsleDto implements Serializable {
    * @return the isle
    */
   public Isle isleFromDto() {
-    return new Isle(id, serialNumber, password, latitude, longitude, altitude, isItWorking,
+    return new Isle(id, serialNumber, latitude, longitude, altitude, isItWorking,
         samplingInterval);
   }
 
@@ -115,24 +108,6 @@ public class IsleDto implements Serializable {
    */
   public void setSerialNumber(String serialNumber) {
     this.serialNumber = serialNumber;
-  }
-
-  /**
-   * Gets the password.
-   *
-   * @return the password
-   */
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * Sets the password.
-   *
-   * @param password the new password
-   */
-  public void setPassword(String password) {
-    this.password = password;
   }
 
   /**
