@@ -42,7 +42,7 @@ public class IsleController {
   /**
    * Find all.
    *
-   * @return the response entity
+   * @return the response entity with all found isles
    */
   @GetMapping
   public ResponseEntity<List<IsleResponseDefaultDto>> findAll() {
@@ -54,7 +54,7 @@ public class IsleController {
    * Find by id.
    *
    * @param id the id
-   * @return the response entity
+   * @return the response entity with found isle
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/{id}")
@@ -68,7 +68,7 @@ public class IsleController {
    * Find by serial number.
    *
    * @param serialNumber the serial number
-   * @return the response entity
+   * @return the response entity with found isle
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/serial/{serialNumber}")
@@ -79,10 +79,10 @@ public class IsleController {
   }
 
   /**
-   * Creates the.
+   * Creates the isle.
    *
    * @param isleDto the isle dto
-   * @return the response entity
+   * @return the response entity with new isle
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   @PostMapping
@@ -93,41 +93,43 @@ public class IsleController {
   }
 
   /**
-   * Update.
+   * Update the isle.
    *
    * @param id the id
    * @param isleDto the isle dto
-   * @return the response entity
+   * @return the response entity with updated isle
    * @throws EntityNotFoundException the entity not found exception
+   * @throws EntityAlreadyExistsException the entity already exists exception
    */
   @PutMapping("/{id}")
   public ResponseEntity<IsleResponseDefaultDto> update(@PathVariable("id") String id,
-      @RequestBody @Valid IsleDto isleDto) throws EntityNotFoundException {
+      @RequestBody @Valid IsleDto isleDto)
+      throws EntityNotFoundException, EntityAlreadyExistsException {
     Isle isle = service.updateIsleById(id, isleDto);
     return ResponseEntity.accepted().body(convertToDto(isle));
   }
 
   /**
-   * Toggle.
+   * Toggle 'isItWorking' mode.
    *
    * @param id the id
-   * @return the response entity
+   * @return the response entity with updated mode
    * @throws EntityNotFoundException the entity not found exception
    */
   @PatchMapping("/toggle/{id}")
   public ResponseEntity<Map<String, Boolean>> toggle(@PathVariable("id") String id)
       throws EntityNotFoundException {
-    Boolean mode = service.toogleWorkingMode(id);
+    Boolean isItWorking = service.toogleWorkingMode(id);
     Map<String, Boolean> response = new HashMap<>();
-    response.put("isItWorking", mode);
+    response.put("isItWorking", isItWorking);
     return ResponseEntity.accepted().body(response);
   }
 
   /**
-   * Delete.
+   * Delete the isle.
    *
    * @param id the id
-   * @return the response entity
+   * @return the response entity without content.
    * @throws EntityNotFoundException the entity not found exception
    */
   @DeleteMapping("/{id}")
@@ -144,11 +146,8 @@ public class IsleController {
    * @return the uri
    */
   private URI buildUri(String id) {
-    return ServletUriComponentsBuilder
-        .fromCurrentContextPath()
-        .path(endpoint + "/{id}")
-        .buildAndExpand(id)
-        .toUri();
+    return ServletUriComponentsBuilder.fromCurrentContextPath().path(endpoint + "/{id}")
+        .buildAndExpand(id).toUri();
   }
 
   /**
