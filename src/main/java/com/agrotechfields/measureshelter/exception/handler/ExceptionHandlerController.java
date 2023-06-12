@@ -1,5 +1,6 @@
 package com.agrotechfields.measureshelter.exception.handler;
 
+import com.agrotechfields.measureshelter.exception.DivergentSerialNumberException;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.InvalidIdException;
@@ -64,6 +65,21 @@ public class ExceptionHandlerController {
     HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
     FieldError fd = e.getFieldErrors().get(0);
     String msg = fd.getField() + ": " + fd.getDefaultMessage();
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
+   * Handle divergent serial number.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(DivergentSerialNumberException.class)
+  public ResponseEntity<ErrorPayload> handleDivergentSerialNumber(
+      DivergentSerialNumberException e) {
+    HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+    String msg = "The entered serial number differs from the '" + e.getMessage()
+        + "' value found by this 'id'";
     return buildResponse(msg, httpStatus);
   }
 
