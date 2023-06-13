@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import org.bson.codecs.ObjectIdGenerator;
 
 /**
  * The Class MeasureDto.
@@ -18,9 +17,6 @@ public class MeasureDto implements Serializable {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
-
-  /** The id. */
-  private String id;
 
   /** The isle. */
   private Isle isle;
@@ -72,7 +68,6 @@ public class MeasureDto implements Serializable {
    * Instantiates a new measure.
    */
   public MeasureDto() {
-    this.id = new ObjectIdGenerator().generate().toString();
     this.timestamp = LocalDateTime.now();
   }
 
@@ -113,7 +108,6 @@ public class MeasureDto implements Serializable {
    */
   public Measure measureFromDto() {
     Measure measure = new Measure();
-    measure.setId(id);
     measure.setAirTemp(airTemp);
     measure.setGndTemp(gndTemp);
     measure.setWindSpeed(windSpeed);
@@ -126,15 +120,6 @@ public class MeasureDto implements Serializable {
     measure.setRainIntensity(rainIntensity);
     measure.setTimestamp(timestamp);
     return measure;
-  }
-
-  /**
-   * Gets the id.
-   *
-   * @return the id
-   */
-  public String getId() {
-    return id;
   }
 
   /**
