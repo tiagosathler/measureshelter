@@ -18,8 +18,8 @@ public class Measure {
   @MongoId
   private ObjectId id;
 
-  /** The isle. */
-  private Isle isle;
+  /** The isle id. */
+  private ObjectId isleId;
 
   /** The air temperature (°C). */
   private BigDecimal airTemp;
@@ -63,7 +63,7 @@ public class Measure {
    * Instantiates a new measure.
    *
    * @param id the object id
-   * @param isle the isle
+   * @param isleId the isle object id
    * @param airTemp the air temp
    * @param gndTemp the gnd temp
    * @param windSpeed the wind speed
@@ -76,12 +76,12 @@ public class Measure {
    * @param rainIntensity the rain intensity
    * @param timestamp the timestamp
    */
-  public Measure(ObjectId id, Isle isle, BigDecimal airTemp, BigDecimal gndTemp,
+  public Measure(ObjectId id, ObjectId isleId, BigDecimal airTemp, BigDecimal gndTemp,
       BigDecimal windSpeed, BigDecimal windDirection, BigDecimal irradiance, BigDecimal pressure,
       BigDecimal airHumidity, BigDecimal gndHumidity, BigDecimal precipitation,
       BigDecimal rainIntensity, LocalDateTime timestamp) {
     this.id = id;
-    this.isle = isle;
+    this.isleId = isleId;
     this.airTemp = airTemp;
     this.gndTemp = gndTemp;
     this.windSpeed = windSpeed;
@@ -118,17 +118,17 @@ public class Measure {
    *
    * @return the isle
    */
-  public Isle getIsle() {
-    return isle;
+  public ObjectId getIsleId() {
+    return isleId;
   }
 
   /**
    * Sets the isle.
    *
-   * @param isle the new isle
+   * @param isleId the new isle
    */
-  public void setIsle(Isle isle) {
-    this.isle = isle;
+  public void setIsleId(ObjectId isleId) {
+    this.isleId = isleId;
   }
 
   /**
