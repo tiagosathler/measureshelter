@@ -1,5 +1,7 @@
 package com.agrotechfields.measureshelter.dto.request;
 
+import com.agrotechfields.measureshelter.domain.Role;
+import com.agrotechfields.measureshelter.domain.User;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -18,11 +20,16 @@ public class IsleUserDto {
   /** The password. */
   @NotEmpty @Size(min = 5, max = 14)
   private String password;
+  
+  /** The role. */
+  private Role role;
 
   /**
    * Instantiates a new register isle dto.
    */
-  public IsleUserDto() {}
+  public IsleUserDto() {
+    this.role = Role.ROLE_ISLE;
+  }
 
   /**
    * Instantiates a new register isle dto.
@@ -31,8 +38,18 @@ public class IsleUserDto {
    * @param password the password
    */
   public IsleUserDto(String serialNumber, String password) {
+    this();
     this.serialNumber = serialNumber;
     this.password = password;
+  }
+  
+  /**
+   * User from dto.
+   *
+   * @return the user
+   */
+  public User userFromDto() {
+    return new User(null, serialNumber, password, role);
   }
 
   /**
@@ -69,5 +86,14 @@ public class IsleUserDto {
    */
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  /**
+   * Gets the role.
+   *
+   * @return the role
+   */
+  public Role getRole() {
+    return role;
   }
 }
