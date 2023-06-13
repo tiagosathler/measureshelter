@@ -31,7 +31,7 @@ public class MeasureService {
    */
   public Measure createMeasure(Isle isle, MeasureDto measureDto) throws NotPermittedException {
     if (Boolean.FALSE.equals(isle.getIsItWorking())) {
-      throw new NotPermittedException("Isle");
+      throw new NotPermittedException("This Isle doesn't working. It");
     }
     Measure measure = measureDto.measureFromDto();
     measure.setIsle(isle);
@@ -83,28 +83,6 @@ public class MeasureService {
   public Measure updateByMeasureId(String id, MeasureDto measureDto)
       throws EntityNotFoundException {
     Measure foundMeasure = findMeasureById(id);
-    Measure measure = measureDto.measureFromDto();
-    measure.setId(foundMeasure.getId());
-    measure.setIsle(foundMeasure.getIsle());
-    return repository.save(measure);
-  }
-
-  /**
-   * Update by isle by measure id.
-   *
-   * @param isle the isle
-   * @param measureId the measure id
-   * @param measureDto the measure dto
-   * @return the measure
-   * @throws EntityNotFoundException the entity not found exception
-   * @throws NotPermittedException the not permitted update exception
-   */
-  public Measure updateByIsleByMeasureId(Isle isle, String measureId, MeasureDto measureDto)
-      throws EntityNotFoundException, NotPermittedException {
-    Measure foundMeasure = findMeasureById(measureId);
-    if (!(isle.equals(foundMeasure.getIsle()) && isle.getIsItWorking())) {
-      throw new NotPermittedException("Isle");
-    }
     Measure measure = measureDto.measureFromDto();
     measure.setId(foundMeasure.getId());
     measure.setIsle(foundMeasure.getIsle());

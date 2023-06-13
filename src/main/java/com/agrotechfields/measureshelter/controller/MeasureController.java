@@ -43,9 +43,9 @@ public class MeasureController {
   private MeasureService measureService;
 
   /**
-   * Gets the all.
+   * Gets the all measures.
    *
-   * @return the all
+   * @return the all found measures
    */
   @GetMapping
   public ResponseEntity<List<MeasureResponseDefaultDto>> getAll() {
@@ -57,7 +57,7 @@ public class MeasureController {
    * Gets the all measure by isle id.
    *
    * @param id the id
-   * @return the all measure by isle id
+   * @return the all measure found by isle id
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/isle/{id}")
@@ -69,10 +69,10 @@ public class MeasureController {
   }
 
   /**
-   * Gets the by measure id.
+   * Gets the measure id.
    *
    * @param id the id
-   * @return the measure by id
+   * @return the measure found by id
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/{id}")
@@ -83,19 +83,17 @@ public class MeasureController {
   }
 
   /**
-   * Creates the.
+   * Creates the measure.
    *
-   * @param id the id
    * @param measureDto the measure dto
-   * @return the response entity
+   * @return the response entity with new measure
    * @throws EntityNotFoundException the entity not found exception
    * @throws NotPermittedException the not permitted exception
    */
-  @PostMapping("/isle/{id}")
-  public ResponseEntity<MeasureResponseDefaultDto> create(@PathVariable("id") String id,
-      @RequestBody @Valid MeasureDto measureDto)
+  @PostMapping()
+  public ResponseEntity<MeasureResponseDefaultDto> create(@RequestBody @Valid MeasureDto measureDto)
       throws EntityNotFoundException, NotPermittedException {
-    Isle isle = isleService.findIsleById(id);
+    Isle isle = isleService.getIsleFromContext();
     Measure measure = measureService.createMeasure(isle, measureDto);
     return ResponseEntity.created(buildUri(measure.getId())).body(convertToDto(measure));
   }
@@ -105,7 +103,7 @@ public class MeasureController {
    *
    * @param id the id
    * @param measureDto the measure dto
-   * @return the response entity
+   * @return the response entity with updated measure
    * @throws EntityNotFoundException the entity not found exception
    */
   @PutMapping("/{id}")
@@ -116,30 +114,10 @@ public class MeasureController {
   }
 
   /**
-   * Update by measure id by isle id.
-   *
-   * @param measureId the measure id
-   * @param isleId the isle id
-   * @param measureDto the measure dto
-   * @return the response entity
-   * @throws EntityNotFoundException the entity not found exception
-   * @throws NotPermittedException the not permitted update exception
-   */
-  @PutMapping("/{measureId}/isle/{isleId}")
-  public ResponseEntity<MeasureResponseDefaultDto> updateByMeasureIdByIsleId(
-      @PathVariable("measureId") String measureId, @PathVariable("isleId") String isleId,
-      @RequestBody @Valid MeasureDto measureDto)
-      throws EntityNotFoundException, NotPermittedException {
-    Isle isle = isleService.findIsleById(isleId);
-    Measure measure = measureService.updateByIsleByMeasureId(isle, measureId, measureDto);
-    return ResponseEntity.ok().body(convertToDto(measure));
-  }
-
-  /**
-   * Delete.
+   * Delete measure by id.
    *
    * @param id the id
-   * @return the response entity
+   * @return the response entity without content
    * @throws EntityNotFoundException the entity not found exception
    */
   @DeleteMapping("/{id}")
