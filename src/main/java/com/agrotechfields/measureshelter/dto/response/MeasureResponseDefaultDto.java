@@ -58,7 +58,7 @@ public class MeasureResponseDefaultDto implements Serializable {
    * @param measure the measure
    */
   public MeasureResponseDefaultDto(Measure measure) {
-    this.id = measure.getId();
+    this.id = measure.getId().toHexString();
     this.airTemp = measure.getAirTemp();
     this.gndTemp = measure.getGndTemp();
     this.windSpeed = measure.getWindSpeed();
