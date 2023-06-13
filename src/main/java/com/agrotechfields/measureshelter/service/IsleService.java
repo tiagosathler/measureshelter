@@ -10,6 +10,7 @@ import com.agrotechfields.measureshelter.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -141,5 +142,20 @@ public class IsleService {
       User user = foundUser.get();
       userRepository.delete(user);
     }
+  }
+
+  /**
+   * Gets the isle from context.
+   *
+   * @return the isle found from context
+   * @throws EntityNotFoundException the entity not found exception
+   */
+  public Isle getIsleFromContext() throws EntityNotFoundException {
+    User contextUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Optional<Isle> foundIsle = isleRepository.findBySerialNumber(contextUser.getUsername());
+    if (foundIsle.isEmpty()) {
+      throw new EntityNotFoundException("Isle");
+    }
+    return foundIsle.get();
   }
 }
