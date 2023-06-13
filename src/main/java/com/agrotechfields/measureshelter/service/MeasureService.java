@@ -35,7 +35,7 @@ public class MeasureService {
       throw new NotPermittedException("This Isle doesn't working. It");
     }
     Measure measure = measureDto.measureFromDto();
-    measure.setIsle(isle);
+    measure.setIsleId(isle.getId());
     return measureRepository.insert(measure);
   }
 
@@ -55,7 +55,7 @@ public class MeasureService {
    * @return the list
    */
   public List<Measure> findAllMeasuresByIsle(Isle isle) {
-    return measureRepository.findByIsle(isle);
+    return measureRepository.findByIsleId(isle.getId());
   }
 
   /**
@@ -86,7 +86,7 @@ public class MeasureService {
     Measure foundMeasure = findMeasureById(objectId);
     Measure measure = measureDto.measureFromDto();
     measure.setId(foundMeasure.getId());
-    measure.setIsle(foundMeasure.getIsle());
+    measure.setIsleId(foundMeasure.getIsleId());
     return measureRepository.save(measure);
   }
 
