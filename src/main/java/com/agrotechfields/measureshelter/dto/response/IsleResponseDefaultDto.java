@@ -39,7 +39,7 @@ public class IsleResponseDefaultDto implements Serializable {
    * @param isle the isle
    */
   public IsleResponseDefaultDto(Isle isle) {
-    this.id = isle.getId();
+    this.id = isle.getId().toHexString();
     this.serialNumber = isle.getSerialNumber();
     this.latitude = isle.getLatitude();
     this.longitude = isle.getLongitude();

@@ -23,7 +23,7 @@ public class IsleResponseShortDto implements Serializable {
    * @param isle the isle
    */
   public IsleResponseShortDto(Isle isle) {
-    this.id = isle.getId();
+    this.id = isle.getId().toHexString();
     this.serialNumber = isle.getSerialNumber();
   }
 
