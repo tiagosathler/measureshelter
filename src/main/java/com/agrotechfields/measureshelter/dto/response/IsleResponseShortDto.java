@@ -1,4 +1,4 @@
-package com.agrotechfields.measureshelter.dto;
+package com.agrotechfields.measureshelter.dto.response;
 
 import com.agrotechfields.measureshelter.domain.Isle;
 import java.io.Serializable;

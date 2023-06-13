@@ -1,4 +1,4 @@
-package com.agrotechfields.measureshelter.dto;
+package com.agrotechfields.measureshelter.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;

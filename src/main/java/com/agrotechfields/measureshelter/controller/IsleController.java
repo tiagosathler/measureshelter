@@ -1,8 +1,8 @@
 package com.agrotechfields.measureshelter.controller;
 
 import com.agrotechfields.measureshelter.domain.Isle;
-import com.agrotechfields.measureshelter.dto.IsleDto;
-import com.agrotechfields.measureshelter.dto.IsleResponseDefaultDto;
+import com.agrotechfields.measureshelter.dto.request.IsleDto;
+import com.agrotechfields.measureshelter.dto.response.IsleResponseDefaultDto;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.service.IsleService;

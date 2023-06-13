@@ -1,4 +1,4 @@
-package com.agrotechfields.measureshelter.dto;
+package com.agrotechfields.measureshelter.dto.request;
 
 import com.agrotechfields.measureshelter.domain.Isle;
 import jakarta.validation.constraints.DecimalMax;

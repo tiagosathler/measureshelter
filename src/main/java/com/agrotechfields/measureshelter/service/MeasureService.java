@@ -2,7 +2,7 @@ package com.agrotechfields.measureshelter.service;
 
 import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.domain.Measure;
-import com.agrotechfields.measureshelter.dto.MeasureDto;
+import com.agrotechfields.measureshelter.dto.request.MeasureDto;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.NotPermittedException;
 import com.agrotechfields.measureshelter.repository.MeasureRepository;

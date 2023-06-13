@@ -2,9 +2,9 @@ package com.agrotechfields.measureshelter.controller;
 
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
-import com.agrotechfields.measureshelter.dto.IsleUserDto;
-import com.agrotechfields.measureshelter.dto.UserDto;
-import com.agrotechfields.measureshelter.dto.UserResponseDto;
+import com.agrotechfields.measureshelter.dto.request.IsleUserDto;
+import com.agrotechfields.measureshelter.dto.request.UserDto;
+import com.agrotechfields.measureshelter.dto.response.UserResponseDto;
 import com.agrotechfields.measureshelter.exception.DivergentSerialNumberException;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;

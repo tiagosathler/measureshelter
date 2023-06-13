@@ -1,8 +1,8 @@
 package com.agrotechfields.measureshelter.controller;
 
 import com.agrotechfields.measureshelter.domain.User;
-import com.agrotechfields.measureshelter.dto.AuthDto;
-import com.agrotechfields.measureshelter.dto.TokenReponseDto;
+import com.agrotechfields.measureshelter.dto.request.AuthDto;
+import com.agrotechfields.measureshelter.dto.response.TokenReponseDto;
 import com.agrotechfields.measureshelter.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
