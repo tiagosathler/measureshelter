@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * The Class IsleResponseDefaultDto.
  */
-public class IsleResponseDefaultDto implements Serializable {
+public class IsleResponseDto implements Serializable {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
@@ -38,7 +38,7 @@ public class IsleResponseDefaultDto implements Serializable {
    *
    * @param isle the isle
    */
-  public IsleResponseDefaultDto(Isle isle) {
+  public IsleResponseDto(Isle isle) {
     this.id = isle.getId().toHexString();
     this.serialNumber = isle.getSerialNumber();
     this.latitude = isle.getLatitude();

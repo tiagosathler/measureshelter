@@ -2,7 +2,7 @@ package com.agrotechfields.measureshelter.controller;
 
 import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.dto.request.IsleDto;
-import com.agrotechfields.measureshelter.dto.response.IsleResponseDefaultDto;
+import com.agrotechfields.measureshelter.dto.response.IsleResponseDto;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.InvalidIdException;
@@ -52,7 +52,7 @@ public class IsleController {
    * @return the response entity with all found isles
    */
   @GetMapping
-  public ResponseEntity<List<IsleResponseDefaultDto>> findAll() {
+  public ResponseEntity<List<IsleResponseDto>> findAll() {
     List<Isle> isles = isleService.findAllIsles();
     return ResponseEntity.ok().body(convertToDto(isles));
   }
@@ -66,7 +66,7 @@ public class IsleController {
    * @throws InvalidIdException the invalid id exception
    */
   @GetMapping("/{id}")
-  public ResponseEntity<IsleResponseDefaultDto> findById(@PathVariable("id") String id)
+  public ResponseEntity<IsleResponseDto> findById(@PathVariable("id") String id)
       throws EntityNotFoundException, InvalidIdException {
     ObjectId objectId = idService.getObjectId(id);
     Isle isle = isleService.findIsleById(objectId);
@@ -81,7 +81,7 @@ public class IsleController {
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/serial/{serialNumber}")
-  public ResponseEntity<IsleResponseDefaultDto> findBySerialNumber(
+  public ResponseEntity<IsleResponseDto> findBySerialNumber(
       @PathVariable("serialNumber") String serialNumber) throws EntityNotFoundException {
     Isle isle = isleService.findIsleBySerialNumber(serialNumber);
     return ResponseEntity.ok().body(convertToDto(isle));
@@ -95,7 +95,7 @@ public class IsleController {
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   @PostMapping
-  public ResponseEntity<IsleResponseDefaultDto> create(@RequestBody @Valid IsleDto isleDto)
+  public ResponseEntity<IsleResponseDto> create(@RequestBody @Valid IsleDto isleDto)
       throws EntityAlreadyExistsException {
     Isle isle = isleService.createIsle(isleDto);
     return ResponseEntity.created(buildUri(isle.getId())).body(convertToDto(isle));
@@ -112,7 +112,7 @@ public class IsleController {
    * @throws InvalidIdException the invalid id exception
    */
   @PutMapping("/{id}")
-  public ResponseEntity<IsleResponseDefaultDto> update(@PathVariable("id") String id,
+  public ResponseEntity<IsleResponseDto> update(@PathVariable("id") String id,
       @RequestBody @Valid IsleDto isleDto)
       throws EntityNotFoundException, EntityAlreadyExistsException, InvalidIdException {
     ObjectId objectId = idService.getObjectId(id);
@@ -174,8 +174,8 @@ public class IsleController {
    * @param isles the isles
    * @return the list
    */
-  private List<IsleResponseDefaultDto> convertToDto(List<Isle> isles) {
-    return isles.stream().map(IsleResponseDefaultDto::new).toList();
+  private List<IsleResponseDto> convertToDto(List<Isle> isles) {
+    return isles.stream().map(IsleResponseDto::new).toList();
   }
 
   /**
@@ -184,7 +184,7 @@ public class IsleController {
    * @param isle the isle
    * @return the isle response default dto
    */
-  private IsleResponseDefaultDto convertToDto(Isle isle) {
-    return new IsleResponseDefaultDto(isle);
+  private IsleResponseDto convertToDto(Isle isle) {
+    return new IsleResponseDto(isle);
   }
 }
