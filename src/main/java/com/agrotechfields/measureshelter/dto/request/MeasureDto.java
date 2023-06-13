@@ -1,6 +1,5 @@
 package com.agrotechfields.measureshelter.dto.request;
 
-import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.domain.Measure;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.Max;
@@ -9,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.bson.types.ObjectId;
 
 /**
  * The Class MeasureDto.
@@ -18,8 +18,8 @@ public class MeasureDto implements Serializable {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
-  /** The isle. */
-  private Isle isle;
+  /** The isle id. */
+  private ObjectId isleId;
 
   /** The air temperature (°C). */
   @NotNull @Min(-20) @Max(50)
@@ -123,21 +123,21 @@ public class MeasureDto implements Serializable {
   }
 
   /**
-   * Gets the isle.
+   * Gets the isle id.
    *
-   * @return the isle
+   * @return the isle id
    */
-  public Isle getIsle() {
-    return isle;
+  public ObjectId getIsleId() {
+    return isleId;
   }
 
   /**
-   * Sets the isle.
+   * Sets the isle id.
    *
-   * @param isle the new isle
+   * @param isleId the new isle id
    */
-  public void setIsle(Isle isle) {
-    this.isle = isle;
+  public void setIsleId(ObjectId isleId) {
+    this.isleId = isleId;
   }
 
   /**
