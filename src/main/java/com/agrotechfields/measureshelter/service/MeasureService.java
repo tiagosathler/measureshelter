@@ -8,6 +8,7 @@ import com.agrotechfields.measureshelter.exception.NotPermittedException;
 import com.agrotechfields.measureshelter.repository.MeasureRepository;
 import java.util.List;
 import java.util.Optional;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class MeasureService {
 
   /** The repository. */
   @Autowired
-  private MeasureRepository repository;
+  private MeasureRepository measureRepository;
 
   /**
    * Creates the measure.
@@ -35,7 +36,7 @@ public class MeasureService {
     }
     Measure measure = measureDto.measureFromDto();
     measure.setIsle(isle);
-    return repository.save(measure);
+    return measureRepository.insert(measure);
   }
 
   /**
@@ -44,7 +45,7 @@ public class MeasureService {
    * @return the list
    */
   public List<Measure> findAllMeasures() {
-    return repository.findAll();
+    return measureRepository.findAll();
   }
 
   /**
@@ -54,18 +55,18 @@ public class MeasureService {
    * @return the list
    */
   public List<Measure> findAllMeasuresByIsle(Isle isle) {
-    return repository.findByIsle(isle);
+    return measureRepository.findByIsle(isle);
   }
 
   /**
    * Find measure by id.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @return the measure
    * @throws EntityNotFoundException the entity not found exception
    */
-  public Measure findMeasureById(String id) throws EntityNotFoundException {
-    Optional<Measure> foundMeasure = repository.findById(id);
+  public Measure findMeasureById(ObjectId objectId) throws EntityNotFoundException {
+    Optional<Measure> foundMeasure = measureRepository.findById(objectId);
     if (foundMeasure.isEmpty()) {
       throw new EntityNotFoundException("Measure");
     }
@@ -75,28 +76,28 @@ public class MeasureService {
   /**
    * Update by measure id.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @param measureDto the measure dto
    * @return the measure
    * @throws EntityNotFoundException the entity not found exception
    */
-  public Measure updateByMeasureId(String id, MeasureDto measureDto)
+  public Measure updateByMeasureId(ObjectId objectId, MeasureDto measureDto)
       throws EntityNotFoundException {
-    Measure foundMeasure = findMeasureById(id);
+    Measure foundMeasure = findMeasureById(objectId);
     Measure measure = measureDto.measureFromDto();
     measure.setId(foundMeasure.getId());
     measure.setIsle(foundMeasure.getIsle());
-    return repository.save(measure);
+    return measureRepository.save(measure);
   }
 
   /**
    * Delete measure by id.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @throws EntityNotFoundException the entity not found exception
    */
-  public void deleteMeasureById(String id) throws EntityNotFoundException {
-    Measure foundMeasure = findMeasureById(id);
-    repository.delete(foundMeasure);
+  public void deleteMeasureById(ObjectId objectId) throws EntityNotFoundException {
+    Measure foundMeasure = findMeasureById(objectId);
+    measureRepository.delete(foundMeasure);
   }
 }
