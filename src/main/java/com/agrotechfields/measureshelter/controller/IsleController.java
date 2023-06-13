@@ -5,12 +5,15 @@ import com.agrotechfields.measureshelter.dto.request.IsleDto;
 import com.agrotechfields.measureshelter.dto.response.IsleResponseDefaultDto;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
+import com.agrotechfields.measureshelter.exception.InvalidIdException;
+import com.agrotechfields.measureshelter.service.IdService;
 import com.agrotechfields.measureshelter.service.IsleService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +40,11 @@ public class IsleController {
 
   /** The service. */
   @Autowired
-  private IsleService service;
+  private IsleService isleService;
+
+  /** The id service. */
+  @Autowired
+  private IdService idService;
 
   /**
    * Find all.
@@ -46,7 +53,7 @@ public class IsleController {
    */
   @GetMapping
   public ResponseEntity<List<IsleResponseDefaultDto>> findAll() {
-    List<Isle> isles = service.findAllIsles();
+    List<Isle> isles = isleService.findAllIsles();
     return ResponseEntity.ok().body(convertToDto(isles));
   }
 
@@ -56,11 +63,13 @@ public class IsleController {
    * @param id the id
    * @return the response entity with found isle
    * @throws EntityNotFoundException the entity not found exception
+   * @throws InvalidIdException the invalid id exception
    */
   @GetMapping("/{id}")
   public ResponseEntity<IsleResponseDefaultDto> findById(@PathVariable("id") String id)
-      throws EntityNotFoundException {
-    Isle isle = service.findIsleById(id);
+      throws EntityNotFoundException, InvalidIdException {
+    ObjectId objectId = idService.getObjectId(id);
+    Isle isle = isleService.findIsleById(objectId);
     return ResponseEntity.ok().body(convertToDto(isle));
   }
 
@@ -74,7 +83,7 @@ public class IsleController {
   @GetMapping("/serial/{serialNumber}")
   public ResponseEntity<IsleResponseDefaultDto> findBySerialNumber(
       @PathVariable("serialNumber") String serialNumber) throws EntityNotFoundException {
-    Isle isle = service.findIsleBySerialNumber(serialNumber);
+    Isle isle = isleService.findIsleBySerialNumber(serialNumber);
     return ResponseEntity.ok().body(convertToDto(isle));
   }
 
@@ -88,7 +97,7 @@ public class IsleController {
   @PostMapping
   public ResponseEntity<IsleResponseDefaultDto> create(@RequestBody @Valid IsleDto isleDto)
       throws EntityAlreadyExistsException {
-    Isle isle = service.createIsle(isleDto);
+    Isle isle = isleService.createIsle(isleDto);
     return ResponseEntity.created(buildUri(isle.getId())).body(convertToDto(isle));
   }
 
@@ -100,12 +109,14 @@ public class IsleController {
    * @return the response entity with updated isle
    * @throws EntityNotFoundException the entity not found exception
    * @throws EntityAlreadyExistsException the entity already exists exception
+   * @throws InvalidIdException the invalid id exception
    */
   @PutMapping("/{id}")
   public ResponseEntity<IsleResponseDefaultDto> update(@PathVariable("id") String id,
       @RequestBody @Valid IsleDto isleDto)
-      throws EntityNotFoundException, EntityAlreadyExistsException {
-    Isle isle = service.updateIsleById(id, isleDto);
+      throws EntityNotFoundException, EntityAlreadyExistsException, InvalidIdException {
+    ObjectId objectId = idService.getObjectId(id);
+    Isle isle = isleService.updateIsleById(objectId, isleDto);
     return ResponseEntity.accepted().body(convertToDto(isle));
   }
 
@@ -115,11 +126,13 @@ public class IsleController {
    * @param id the id
    * @return the response entity with updated mode
    * @throws EntityNotFoundException the entity not found exception
+   * @throws InvalidIdException the invalid id exception
    */
   @PatchMapping("/toggle/{id}")
   public ResponseEntity<Map<String, Boolean>> toggle(@PathVariable("id") String id)
-      throws EntityNotFoundException {
-    Boolean isItWorking = service.toogleWorkingMode(id);
+      throws EntityNotFoundException, InvalidIdException {
+    ObjectId objectId = idService.getObjectId(id);
+    Boolean isItWorking = isleService.toogleWorkingMode(objectId);
     Map<String, Boolean> response = new HashMap<>();
     response.put("isItWorking", isItWorking);
     return ResponseEntity.accepted().body(response);
@@ -131,23 +144,28 @@ public class IsleController {
    * @param id the id
    * @return the response entity without content.
    * @throws EntityNotFoundException the entity not found exception
+   * @throws InvalidIdException the invalid id exception
    */
   @DeleteMapping("/{id}")
   public ResponseEntity<String> delete(@PathVariable("id") String id)
-      throws EntityNotFoundException {
-    service.deleteIsleById(id);
+      throws EntityNotFoundException, InvalidIdException {
+    ObjectId objectId = idService.getObjectId(id);
+    isleService.deleteIsleById(objectId);
     return ResponseEntity.noContent().build();
   }
 
   /**
    * Builds the uri.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @return the uri
    */
-  private URI buildUri(String id) {
-    return ServletUriComponentsBuilder.fromCurrentContextPath().path(endpoint + "/{id}")
-        .buildAndExpand(id).toUri();
+  private URI buildUri(ObjectId objectId) {
+    return ServletUriComponentsBuilder
+        .fromCurrentContextPath()
+        .path(endpoint + "/{id}")
+        .buildAndExpand(objectId.toHexString())
+        .toUri();
   }
 
   /**
