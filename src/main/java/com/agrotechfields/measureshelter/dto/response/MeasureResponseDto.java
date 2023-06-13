@@ -1,4 +1,4 @@
-package com.agrotechfields.measureshelter.dto;
+package com.agrotechfields.measureshelter.dto.response;
 
 import com.agrotechfields.measureshelter.domain.Measure;
 import java.io.Serializable;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 /**
  * The Class MeasureResponseDefaultDto.
  */
-public class MeasureResponseDefaultDto implements Serializable {
+public class MeasureResponseDto implements Serializable {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
@@ -17,7 +17,7 @@ public class MeasureResponseDefaultDto implements Serializable {
   private String id;
 
   /** The isle. */
-  private IsleResponseShortDto isleResponseShortDto;
+  private String isleId;
 
   /** The air temperature (°C). */
   private BigDecimal airTemp;
@@ -57,8 +57,8 @@ public class MeasureResponseDefaultDto implements Serializable {
    *
    * @param measure the measure
    */
-  public MeasureResponseDefaultDto(Measure measure) {
-    this.id = measure.getId();
+  public MeasureResponseDto(Measure measure) {
+    this.id = measure.getId().toHexString();
     this.airTemp = measure.getAirTemp();
     this.gndTemp = measure.getGndTemp();
     this.windSpeed = measure.getWindSpeed();
@@ -70,7 +70,7 @@ public class MeasureResponseDefaultDto implements Serializable {
     this.precipitation = measure.getPrecipitation();
     this.rainIntensity = measure.getRainIntensity();
     this.timestamp = measure.getTimestamp();
-    this.isleResponseShortDto = new IsleResponseShortDto(measure.getIsle());
+    this.isleId = measure.getIsleId().toHexString();
   }
 
   /**
@@ -83,12 +83,12 @@ public class MeasureResponseDefaultDto implements Serializable {
   }
 
   /**
-   * Gets the isle.
+   * Gets the isle id.
    *
-   * @return the isle
+   * @return the isle id
    */
-  public IsleResponseShortDto getIsle() {
-    return isleResponseShortDto;
+  public String getIsleId() {
+    return isleId;
   }
 
   /**

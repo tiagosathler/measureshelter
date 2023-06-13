@@ -1,4 +1,4 @@
-package com.agrotechfields.measureshelter.dto;
+package com.agrotechfields.measureshelter.dto.response;
 
 import com.agrotechfields.measureshelter.domain.Isle;
 import java.io.Serializable;
@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * The Class IsleResponseDefaultDto.
  */
-public class IsleResponseDefaultDto implements Serializable {
+public class IsleResponseDto implements Serializable {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
@@ -38,8 +38,8 @@ public class IsleResponseDefaultDto implements Serializable {
    *
    * @param isle the isle
    */
-  public IsleResponseDefaultDto(Isle isle) {
-    this.id = isle.getId();
+  public IsleResponseDto(Isle isle) {
+    this.id = isle.getId().toHexString();
     this.serialNumber = isle.getSerialNumber();
     this.latitude = isle.getLatitude();
     this.longitude = isle.getLongitude();

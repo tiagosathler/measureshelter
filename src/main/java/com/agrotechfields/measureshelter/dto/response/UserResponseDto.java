@@ -1,4 +1,4 @@
-package com.agrotechfields.measureshelter.dto;
+package com.agrotechfields.measureshelter.dto.response;
 
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;

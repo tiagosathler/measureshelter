@@ -1,4 +1,4 @@
-package com.agrotechfields.measureshelter.dto;
+package com.agrotechfields.measureshelter.dto.request;
 
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
@@ -28,7 +28,9 @@ public class UserDto {
   /**
    * Instantiates a new user dto.
    */
-  public UserDto() {}
+  public UserDto() {
+    this.role = Role.ROLE_USER;
+  }
 
   /**
    * Instantiates a new user dto.
@@ -37,6 +39,7 @@ public class UserDto {
    * @param password the password
    */
   public UserDto(String username, String password) {
+    this();
     this.username = username;
     this.password = password;
   }

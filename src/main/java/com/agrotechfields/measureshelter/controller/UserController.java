@@ -2,20 +2,22 @@ package com.agrotechfields.measureshelter.controller;
 
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
-import com.agrotechfields.measureshelter.dto.IsleUserDto;
-import com.agrotechfields.measureshelter.dto.UserDto;
-import com.agrotechfields.measureshelter.dto.UserResponseDto;
+import com.agrotechfields.measureshelter.dto.request.IsleUserDto;
+import com.agrotechfields.measureshelter.dto.request.UserDto;
+import com.agrotechfields.measureshelter.dto.response.UserResponseDto;
 import com.agrotechfields.measureshelter.exception.DivergentSerialNumberException;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.InvalidIdException;
 import com.agrotechfields.measureshelter.exception.NotPermittedException;
+import com.agrotechfields.measureshelter.service.IdService;
 import com.agrotechfields.measureshelter.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,10 @@ public class UserController {
   /** The user service. */
   @Autowired
   private UserService userService;
+
+  /** The id service. */
+  @Autowired
+  private IdService idService;
 
   /**
    * Creates the user.
@@ -101,7 +107,8 @@ public class UserController {
   @GetMapping("/{id}")
   public ResponseEntity<UserResponseDto> findById(@PathVariable("id") String id)
       throws EntityNotFoundException, InvalidIdException {
-    User user = userService.findUserById(id);
+    ObjectId objectId = idService.getObjectId(id);
+    User user = userService.findUserById(objectId);
     return ResponseEntity.ok().body(convertToDto(user));
   }
 
@@ -145,7 +152,8 @@ public class UserController {
   @PatchMapping("/{id}/toggle/role")
   public ResponseEntity<Map<String, String>> toggleRole(@PathVariable("id") String id)
       throws InvalidIdException, NotPermittedException, EntityNotFoundException {
-    Role role = userService.toggleRoleById(id);
+    ObjectId objectId = idService.getObjectId(id);
+    Role role = userService.toggleRoleById(objectId);
     Map<String, String> response = new HashMap<>();
     response.put("role", role.name());
     return ResponseEntity.ok().body(response);
@@ -163,7 +171,8 @@ public class UserController {
   @PatchMapping("/{id}/toggle/enable")
   public ResponseEntity<Map<String, Boolean>> toggleEnable(@PathVariable("id") String id)
       throws InvalidIdException, NotPermittedException, EntityNotFoundException {
-    boolean isEnable = userService.toggleIsEnable(id);
+    ObjectId objectId = idService.getObjectId(id);
+    boolean isEnable = userService.toggleIsEnable(objectId);
     Map<String, Boolean> response = new HashMap<>();
     response.put("isEnable", isEnable);
     return ResponseEntity.ok().body(response);
@@ -180,7 +189,8 @@ public class UserController {
   @DeleteMapping("/{id}")
   public ResponseEntity<String> deleteById(@PathVariable("id") String id)
       throws InvalidIdException, EntityNotFoundException {
-    userService.deleteUserById(id);
+    ObjectId objectId = idService.getObjectId(id);
+    userService.deleteUserById(objectId);
     return ResponseEntity.noContent().build();
   }
 
@@ -191,8 +201,11 @@ public class UserController {
    * @return the uri
    */
   private URI buildUri(String id) {
-    return ServletUriComponentsBuilder.fromCurrentContextPath().path(endpoint + "/{id}")
-        .buildAndExpand(id).toUri();
+    return ServletUriComponentsBuilder
+        .fromCurrentContextPath()
+        .path(endpoint + "/{id}")
+        .buildAndExpand(id)
+        .toUri();
   }
 
   /**

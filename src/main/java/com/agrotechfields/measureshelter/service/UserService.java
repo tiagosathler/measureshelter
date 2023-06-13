@@ -3,8 +3,8 @@ package com.agrotechfields.measureshelter.service;
 import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
-import com.agrotechfields.measureshelter.dto.IsleUserDto;
-import com.agrotechfields.measureshelter.dto.UserDto;
+import com.agrotechfields.measureshelter.dto.request.IsleUserDto;
+import com.agrotechfields.measureshelter.dto.request.UserDto;
 import com.agrotechfields.measureshelter.exception.DivergentSerialNumberException;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
@@ -75,15 +75,12 @@ public class UserService implements UserDetailsService {
 
     if (isAdmin) {
       userDto.setRole(Role.ROLE_ADMIN);
-    } else {
-      userDto.setRole(Role.ROLE_USER);
     }
 
-    userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+    String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+    userDto.setPassword(encodedPassword);
 
-    User user = userDto.userFromDto();
-
-    return userRepository.insert(user);
+    return userRepository.insert(userDto.userFromDto());
   }
 
   /**
@@ -102,19 +99,18 @@ public class UserService implements UserDetailsService {
     if (foundIsle.isEmpty()) {
       throw new EntityNotFoundException("Isle");
     }
-    Isle isle = foundIsle.get();
 
-    Optional<User> foundUser = userRepository.findByUsername(isle.getSerialNumber());
+    Optional<User> foundUser = userRepository.findByUsername(isleUserDto.getSerialNumber());
 
     if (foundUser.isPresent()) {
       throw new EntityAlreadyExistsException(
-          "Isle user by the serial number '" + isle.getSerialNumber() + "'");
+          "Isle user by the serial number '" + isleUserDto.getSerialNumber() + "'");
     }
 
     String encodedPassword = passwordEncoder.encode(isleUserDto.getPassword());
+    isleUserDto.setPassword(encodedPassword);
 
-    User user = new User(null, isle.getSerialNumber(), encodedPassword, Role.ROLE_ISLE);
-    return userRepository.insert(user);
+    return userRepository.insert(isleUserDto.userFromDto());
   }
 
   /**
@@ -129,13 +125,12 @@ public class UserService implements UserDetailsService {
   /**
    * Find user by id.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @return the user
    * @throws EntityNotFoundException the entity not found exception
    * @throws InvalidIdException the invalid id exception
    */
-  public User findUserById(String id) throws EntityNotFoundException, InvalidIdException {
-    ObjectId objectId = getObjectId(id);
+  public User findUserById(ObjectId objectId) throws EntityNotFoundException, InvalidIdException {
     Optional<User> foundUser = userRepository.findById(objectId);
     if (foundUser.isEmpty()) {
       throw new EntityNotFoundException("User");
@@ -165,7 +160,7 @@ public class UserService implements UserDetailsService {
   }
 
   /**
-   * Update isle user.
+   * Update isle user password.
    *
    * @param isleUserDto the register isle dto
    * @return the user
@@ -173,12 +168,11 @@ public class UserService implements UserDetailsService {
    */
   public User updateIsleUser(IsleUserDto isleUserDto) throws EntityNotFoundException {
     Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleUserDto.getSerialNumber());
-    Optional<User> foundUser = userRepository.findByUsername(isleUserDto.getSerialNumber());
-
     if (foundIsle.isEmpty()) {
       throw new EntityNotFoundException("Isle");
     }
 
+    Optional<User> foundUser = userRepository.findByUsername(isleUserDto.getSerialNumber());
     if (foundUser.isEmpty()) {
       throw new EntityNotFoundException("Register this isle first. Isle as user");
     }
@@ -192,16 +186,14 @@ public class UserService implements UserDetailsService {
   /**
    * Toggle role by id.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @return the role
    * @throws InvalidIdException the invalid id exception
    * @throws NotPermittedException the not permitted exception
    * @throws EntityNotFoundException the entity not found exception
    */
-  public Role toggleRoleById(String id)
+  public Role toggleRoleById(ObjectId objectId)
       throws InvalidIdException, NotPermittedException, EntityNotFoundException {
-    ObjectId objectId = getObjectId(id);
-
     Optional<User> foundUser = userRepository.findById(objectId);
     if (foundUser.isEmpty()) {
       throw new EntityNotFoundException("User");
@@ -226,14 +218,13 @@ public class UserService implements UserDetailsService {
   /**
    * Toggle is enable property.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @return true, if successful
    * @throws EntityNotFoundException the entity not found exception
    * @throws InvalidIdException the invalid id exception
    */
-  public boolean toggleIsEnable(String id) throws EntityNotFoundException, InvalidIdException {
-    ObjectId objectId = getObjectId(id);
-
+  public boolean toggleIsEnable(ObjectId objectId)
+      throws EntityNotFoundException, InvalidIdException {
     Optional<User> foundUser = userRepository.findById(objectId);
     if (foundUser.isEmpty()) {
       throw new EntityNotFoundException("User");
@@ -248,31 +239,15 @@ public class UserService implements UserDetailsService {
   /**
    * Delete user by id.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @throws InvalidIdException the invalid id exception
    * @throws EntityNotFoundException the entity not found exception
    */
-  public void deleteUserById(String id) throws InvalidIdException, EntityNotFoundException {
-    ObjectId objectId = getObjectId(id);
+  public void deleteUserById(ObjectId objectId) throws InvalidIdException, EntityNotFoundException {
     Optional<User> foundUser = userRepository.findById(objectId);
     if (foundUser.isEmpty()) {
       throw new EntityNotFoundException("User");
     }
     userRepository.delete(foundUser.get());
-  }
-
-  /**
-   * Gets the object id.
-   *
-   * @param id the id
-   * @return the object id
-   * @throws InvalidIdException the invalid id exception
-   */
-  private ObjectId getObjectId(String id) throws InvalidIdException {
-    try {
-      return new ObjectId(id);
-    } catch (IllegalArgumentException e) {
-      throw new InvalidIdException(id);
-    }
   }
 }

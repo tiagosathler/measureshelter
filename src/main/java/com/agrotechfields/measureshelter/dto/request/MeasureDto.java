@@ -1,6 +1,5 @@
-package com.agrotechfields.measureshelter.dto;
+package com.agrotechfields.measureshelter.dto.request;
 
-import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.domain.Measure;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.Max;
@@ -9,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import org.bson.codecs.ObjectIdGenerator;
+import org.bson.types.ObjectId;
 
 /**
  * The Class MeasureDto.
@@ -19,11 +18,8 @@ public class MeasureDto implements Serializable {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
-  /** The id. */
-  private String id;
-
-  /** The isle. */
-  private Isle isle;
+  /** The isle id. */
+  private ObjectId isleId;
 
   /** The air temperature (°C). */
   @NotNull @Min(-20) @Max(50)
@@ -72,7 +68,6 @@ public class MeasureDto implements Serializable {
    * Instantiates a new measure.
    */
   public MeasureDto() {
-    this.id = new ObjectIdGenerator().generate().toString();
     this.timestamp = LocalDateTime.now();
   }
 
@@ -113,7 +108,6 @@ public class MeasureDto implements Serializable {
    */
   public Measure measureFromDto() {
     Measure measure = new Measure();
-    measure.setId(id);
     measure.setAirTemp(airTemp);
     measure.setGndTemp(gndTemp);
     measure.setWindSpeed(windSpeed);
@@ -129,30 +123,21 @@ public class MeasureDto implements Serializable {
   }
 
   /**
-   * Gets the id.
+   * Gets the isle id.
    *
-   * @return the id
+   * @return the isle id
    */
-  public String getId() {
-    return id;
+  public ObjectId getIsleId() {
+    return isleId;
   }
 
   /**
-   * Gets the isle.
+   * Sets the isle id.
    *
-   * @return the isle
+   * @param isleId the new isle id
    */
-  public Isle getIsle() {
-    return isle;
-  }
-
-  /**
-   * Sets the isle.
-   *
-   * @param isle the new isle
-   */
-  public void setIsle(Isle isle) {
-    this.isle = isle;
+  public void setIsleId(ObjectId isleId) {
+    this.isleId = isleId;
   }
 
   /**

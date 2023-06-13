@@ -2,13 +2,14 @@ package com.agrotechfields.measureshelter.service;
 
 import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.domain.User;
-import com.agrotechfields.measureshelter.dto.IsleDto;
+import com.agrotechfields.measureshelter.dto.request.IsleDto;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.repository.IsleRepository;
 import com.agrotechfields.measureshelter.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,12 +39,12 @@ public class IsleService {
   /**
    * Find isle by id.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @return the isle
    * @throws EntityNotFoundException the entity not found exception
    */
-  public Isle findIsleById(String id) throws EntityNotFoundException {
-    Optional<Isle> foundIsle = isleRepository.findById(id);
+  public Isle findIsleById(ObjectId objectId) throws EntityNotFoundException {
+    Optional<Isle> foundIsle = isleRepository.findById(objectId);
     if (foundIsle.isEmpty()) {
       throw new EntityNotFoundException("Isle");
     }
@@ -83,15 +84,15 @@ public class IsleService {
   /**
    * Update isle.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @param isleDto the isle dto
    * @return the isle
    * @throws EntityNotFoundException the entity not found exception
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
-  public Isle updateIsleById(String id, IsleDto isleDto)
+  public Isle updateIsleById(ObjectId objectId, IsleDto isleDto)
       throws EntityNotFoundException, EntityAlreadyExistsException {
-    Isle isle = findIsleById(id);
+    Isle isle = findIsleById(objectId);
 
     Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleDto.getSerialNumber());
 
@@ -108,7 +109,7 @@ public class IsleService {
     }
 
     Isle isleUptaded = isleDto.isleFromDto();
-    isleUptaded.setId(id);
+    isleUptaded.setId(objectId);
 
     return isleRepository.save(isleUptaded);
   }
@@ -116,12 +117,12 @@ public class IsleService {
   /**
    * Toogle working mode.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @return true, if successful
    * @throws EntityNotFoundException the entity not found exception
    */
-  public boolean toogleWorkingMode(String id) throws EntityNotFoundException {
-    Isle isle = findIsleById(id);
+  public boolean toogleWorkingMode(ObjectId objectId) throws EntityNotFoundException {
+    Isle isle = findIsleById(objectId);
     isle.setIsItWorking(!isle.getIsItWorking());
     isleRepository.save(isle);
     return isle.getIsItWorking();
@@ -130,11 +131,11 @@ public class IsleService {
   /**
    * Delete isle by id.
    *
-   * @param id the id
+   * @param objectId the ObjectId
    * @throws EntityNotFoundException the entity not found exception
    */
-  public void deleteIsleById(String id) throws EntityNotFoundException {
-    Isle isle = findIsleById(id);
+  public void deleteIsleById(ObjectId objectId) throws EntityNotFoundException {
+    Isle isle = findIsleById(objectId);
     isleRepository.delete(isle);
 
     Optional<User> foundUser = userRepository.findByUsername(isle.getSerialNumber());
