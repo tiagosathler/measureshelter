@@ -11,7 +11,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import org.bson.codecs.ObjectIdGenerator;
 
 /**
  * The Class IsleDto.
@@ -20,9 +19,6 @@ public class IsleDto implements Serializable {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
-
-  /** The id. */
-  private String id;
 
   /** The serial number. */
   @NotEmpty
@@ -57,9 +53,7 @@ public class IsleDto implements Serializable {
   /**
    * Instantiates a new isle dto.
    */
-  public IsleDto() {
-    this.id = new ObjectIdGenerator().generate().toString();
-  }
+  public IsleDto() {}
 
   /**
    * Instantiates a new isle dto.
@@ -73,7 +67,6 @@ public class IsleDto implements Serializable {
    */
   public IsleDto(String serialNumber, BigDecimal latitude, BigDecimal longitude,
       BigDecimal altitude, Boolean isItWorking, Integer samplingInterval) {
-    this();
     this.serialNumber = serialNumber;
     this.latitude = latitude;
     this.longitude = longitude;
@@ -88,7 +81,7 @@ public class IsleDto implements Serializable {
    * @return the isle
    */
   public Isle isleFromDto() {
-    return new Isle(id, serialNumber, latitude, longitude, altitude, isItWorking,
+    return new Isle(null, serialNumber, latitude, longitude, altitude, isItWorking,
         samplingInterval);
   }
 
@@ -198,14 +191,5 @@ public class IsleDto implements Serializable {
    */
   public void setSamplingInterval(Integer samplingInterval) {
     this.samplingInterval = samplingInterval;
-  }
-
-  /**
-   * Gets the id.
-   *
-   * @return the id
-   */
-  public String getId() {
-    return id;
   }
 }
