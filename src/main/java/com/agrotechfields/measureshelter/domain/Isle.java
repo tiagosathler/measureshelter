@@ -2,8 +2,9 @@ package com.agrotechfields.measureshelter.domain;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-import org.springframework.data.annotation.Id;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 /**
  * The Class Isle.
@@ -12,8 +13,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Isle {
 
   /** The id. */
-  @Id
-  private String id;
+  @MongoId
+  private ObjectId id;
 
   /** The serial number. */
   private String serialNumber;
@@ -41,7 +42,7 @@ public class Isle {
   /**
    * Instantiates a new isle.
    *
-   * @param id the id
+   * @param id the object id
    * @param serialNumber the serial number
    * @param latitude the latitude
    * @param longitude the longitude
@@ -49,7 +50,7 @@ public class Isle {
    * @param isItWorking the is it working
    * @param samplingInterval the sampling interval
    */
-  public Isle(String id, String serialNumber, BigDecimal latitude,
+  public Isle(ObjectId id, String serialNumber, BigDecimal latitude,
       BigDecimal longitude, BigDecimal altitude, Boolean isItWorking, Integer samplingInterval) {
     this.id = id;
     this.serialNumber = serialNumber;
@@ -65,7 +66,7 @@ public class Isle {
    *
    * @return the id
    */
-  public String getId() {
+  public ObjectId getId() {
     return id;
   }
 
@@ -74,7 +75,7 @@ public class Isle {
    *
    * @param id the new id
    */
-  public void setId(String id) {
+  public void setId(ObjectId id) {
     this.id = id;
   }
 
