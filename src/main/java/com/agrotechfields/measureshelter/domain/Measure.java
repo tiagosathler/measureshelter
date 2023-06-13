@@ -3,8 +3,9 @@ package com.agrotechfields.measureshelter.domain;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import org.springframework.data.annotation.Id;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 /**
  * The Class Measure. REF:
@@ -14,8 +15,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Measure {
 
   /** The id. */
-  @Id
-  private String id;
+  @MongoId
+  private ObjectId id;
 
   /** The isle. */
   private Isle isle;
@@ -61,7 +62,7 @@ public class Measure {
   /**
    * Instantiates a new measure.
    *
-   * @param id the id
+   * @param id the object id
    * @param isle the isle
    * @param airTemp the air temp
    * @param gndTemp the gnd temp
@@ -75,10 +76,10 @@ public class Measure {
    * @param rainIntensity the rain intensity
    * @param timestamp the timestamp
    */
-  public Measure(String id, Isle isle, BigDecimal airTemp, BigDecimal gndTemp, BigDecimal windSpeed,
-      BigDecimal windDirection, BigDecimal irradiance, BigDecimal pressure, BigDecimal airHumidity,
-      BigDecimal gndHumidity, BigDecimal precipitation, BigDecimal rainIntensity,
-      LocalDateTime timestamp) {
+  public Measure(ObjectId id, Isle isle, BigDecimal airTemp, BigDecimal gndTemp,
+      BigDecimal windSpeed, BigDecimal windDirection, BigDecimal irradiance, BigDecimal pressure,
+      BigDecimal airHumidity, BigDecimal gndHumidity, BigDecimal precipitation,
+      BigDecimal rainIntensity, LocalDateTime timestamp) {
     this.id = id;
     this.isle = isle;
     this.airTemp = airTemp;
@@ -99,7 +100,7 @@ public class Measure {
    *
    * @return the id
    */
-  public String getId() {
+  public ObjectId getId() {
     return id;
   }
 
@@ -108,7 +109,7 @@ public class Measure {
    *
    * @param id the new id
    */
-  public void setId(String id) {
+  public void setId(ObjectId id) {
     this.id = id;
   }
 
