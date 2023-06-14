@@ -132,7 +132,34 @@ class MeasureshelterApplicationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isCreated()).andExpect(jsonPath("$.id").isString());
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isString());
+  }
+
+  @Test
+  @Order(5)
+  @DisplayName("5. Isle - post with an invalid serial number")
+  void postWithAnInvalidSerialNumber() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setAltitude(BigDecimal.valueOf(1000));
+    isleDto.setIsItWorking(true);
+    isleDto.setSamplingInterval(5);
+
+    String body = objectMapper.writeValueAsString(isleDto);
+    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+
+    mockMvc
+        .perform(post("/isle")
+            .headers(httpHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message")
+            .value("serialNumber: must be 10 digits including numbers and capital letters"));
   }
 
   private void insertUser() {
