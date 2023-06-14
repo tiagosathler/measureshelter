@@ -1,5 +1,6 @@
 package com.agrotechfields.measureshelter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -507,5 +508,17 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.message")
             .value("Isle already exists"));
+  }
+
+  @Test
+  @Order(20)
+  @DisplayName("20. Isle - GET all isles")
+  void getAllIsles() throws Exception {
+    mockMvc
+        .perform(get("/isle").headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].serialNumber").value("0000000001"))
+        .andExpect(jsonPath("$[0].id").isNotEmpty());
   }
 }
