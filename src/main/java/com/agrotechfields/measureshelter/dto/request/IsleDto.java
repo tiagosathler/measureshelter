@@ -39,6 +39,7 @@ public class IsleDto implements Serializable {
   private BigDecimal longitude;
 
   /** The altitude (meters). */
+  @NotNull
   @Positive
   private BigDecimal altitude;
 

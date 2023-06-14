@@ -367,6 +367,31 @@ class MeasureshelterApplicationTest {
             .value("altitude: must be greater than 0"));
   }
 
+  @Test
+  @Order(14)
+  @DisplayName("14. Isle - post without an altitude")
+  void postWithoutAnAltitude() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setIsItWorking(true);
+    isleDto.setSamplingInterval(5);
+
+    String body = objectMapper.writeValueAsString(isleDto);
+    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+
+    mockMvc
+        .perform(post("/isle")
+            .headers(httpHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message")
+            .value("altitude: must not be null"));
+  }
+
   private void insertUser() {
     String encodedPassword = passwordEncoder.encode("pass");
     User user = new User(null, "admin", encodedPassword, Role.ROLE_ADMIN);
