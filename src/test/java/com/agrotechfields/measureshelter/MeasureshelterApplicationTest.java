@@ -402,6 +402,32 @@ class MeasureshelterApplicationTest {
     isleDto.setLongitude(BigDecimal.valueOf(20.01));
     isleDto.setAltitude(BigDecimal.valueOf(1000));
     isleDto.setIsItWorking(true);
+    isleDto.setSamplingInterval(3601);
+
+    String body = objectMapper.writeValueAsString(isleDto);
+    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+
+    mockMvc
+        .perform(post("/isle")
+            .headers(httpHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message")
+            .value("samplingInterval: must be less than or equal to 3600"));
+  }
+
+  @Test
+  @Order(16)
+  @DisplayName("16. Isle - post with a sampling interval less than the limit")
+  void postWithASamplingIntervalLessThanTheLimit() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.01));
+    isleDto.setAltitude(BigDecimal.valueOf(3601));
+    isleDto.setIsItWorking(true);
     isleDto.setSamplingInterval(0);
 
     String body = objectMapper.writeValueAsString(isleDto);
