@@ -566,4 +566,15 @@ class MeasureshelterApplicationTest {
         .andExpect(jsonPath("$.serialNumber").value("0000000001"))
         .andExpect(jsonPath("$.id").isNotEmpty());
   }
+
+  @Test
+  @Order(24)
+  @DisplayName("24. Isle - GET isle by nonexisting id")
+  void getIsleByNonexistingId() throws Exception {
+    mockMvc
+        .perform(get("/isle/648a5072cbe534d1d321f28d").headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
 }
