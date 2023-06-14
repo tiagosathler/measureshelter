@@ -213,6 +213,32 @@ class MeasureshelterApplicationTest {
             .value("latitude: must be less than 90"));
   }
 
+  @Test
+  @Order(8)
+  @DisplayName("8. Isle - post with a latitude less than the limit")
+  void postWithALatitudeLessThanTheLimit() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(-90));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setAltitude(BigDecimal.valueOf(1000));
+    isleDto.setIsItWorking(true);
+    isleDto.setSamplingInterval(5);
+
+    String body = objectMapper.writeValueAsString(isleDto);
+    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+
+    mockMvc
+        .perform(post("/isle")
+            .headers(httpHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message")
+            .value("latitude: must be greater than -90"));
+  }
+
   private void insertUser() {
     String encodedPassword = passwordEncoder.encode("pass");
     User user = new User(null, "admin", encodedPassword, Role.ROLE_ADMIN);
