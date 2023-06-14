@@ -31,6 +31,7 @@ import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
 import com.agrotechfields.measureshelter.dto.request.AuthDto;
 import com.agrotechfields.measureshelter.dto.request.IsleDto;
+import com.agrotechfields.measureshelter.dto.response.IsleResponseDto;
 import com.agrotechfields.measureshelter.dto.response.TokenReponseDto;
 import com.agrotechfields.measureshelter.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,6 +75,7 @@ class MeasureshelterApplicationTest {
 
   static final String ADMIN_USERNAME = "admin";
   static final String ADMIN_PASSWORD = "pass";
+  static String id;
 
   static private String token;
   static private final HttpHeaders HTTP_HEADERS = new HttpHeaders();
@@ -180,14 +182,22 @@ class MeasureshelterApplicationTest {
     String body = objectMapper.writeValueAsString(isleDto);
     setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
 
-    mockMvc
+    MvcResult mvcResult = mockMvc
         .perform(post("/isle")
             .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.id").isString());
+        .andExpect(jsonPath("$.id").isString())
+        .andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+
+    IsleResponseDto isleResponseDto =
+        objectMapper.readValue(contentAsString, IsleResponseDto.class);
+
+    id = isleResponseDto.getId();
   }
 
   @Test
@@ -543,5 +553,17 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
+
+  @Test
+  @Order(23)
+  @DisplayName("21. Isle - GET isle by id")
+  void getIsleById() throws Exception {
+    mockMvc
+        .perform(get("/isle/" + id).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.serialNumber").value("0000000001"))
+        .andExpect(jsonPath("$.id").isNotEmpty());
   }
 }
