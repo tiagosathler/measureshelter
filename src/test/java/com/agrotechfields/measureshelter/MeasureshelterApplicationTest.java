@@ -392,6 +392,32 @@ class MeasureshelterApplicationTest {
             .value("altitude: must not be null"));
   }
 
+  @Test
+  @Order(15)
+  @DisplayName("15. Isle - post with a sampling interval greater than the limit")
+  void postWithASamplingIntervalGreaterThanTheLimit() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.01));
+    isleDto.setAltitude(BigDecimal.valueOf(1000));
+    isleDto.setIsItWorking(true);
+    isleDto.setSamplingInterval(0);
+
+    String body = objectMapper.writeValueAsString(isleDto);
+    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+
+    mockMvc
+        .perform(post("/isle")
+            .headers(httpHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message")
+            .value("samplingInterval: must be greater than or equal to 1"));
+  }
+
   private void insertUser() {
     String encodedPassword = passwordEncoder.encode("pass");
     User user = new User(null, "admin", encodedPassword, Role.ROLE_ADMIN);
