@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.math.BigDecimal;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -63,15 +64,45 @@ class MeasureshelterApplicationTest {
   }
 
   @BeforeEach
-  public void setup() {
-    userRepository.deleteAll();;
+  public void beforeEach() {
+  }
+
+  @AfterEach
+  public void afterEach() {
+  }
+
+  static final String ADMIN_USERNAME = "admin";
+  static final String ADMIN_PASSWORD = "pass";
+
+  static private String token;
+  static private final HttpHeaders HTTP_HEADERS = new HttpHeaders();
+
+  private void insertAnAdminUserIntoTheDb() {
+    String encodedPassword = passwordEncoder.encode(ADMIN_PASSWORD);
+    User user = new User(null, ADMIN_USERNAME, encodedPassword, Role.ROLE_ADMIN);
+    userRepository.save(user);
+  }
+
+  private void setHeadersWithTokenByLogin(String username, String password)
+      throws Exception {
+    AuthDto authDto = new AuthDto(username, password);
+    String body = objectMapper.writeValueAsString(authDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body)).andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+
+    TokenReponseDto tokenDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
+    token = tokenDto.getToken();
+    HTTP_HEADERS.setBearerAuth(token);
   }
 
   @Test
   @Order(1)
   @DisplayName("1. Login using a valid username")
   void loginUsingAValidUsername() throws Exception {
-    insertUser();
+    insertAnAdminUserIntoTheDb();
 
     AuthDto authDto = new AuthDto("admin", "pass");
     String body = objectMapper.writeValueAsString(authDto);
@@ -85,8 +116,6 @@ class MeasureshelterApplicationTest {
   @Order(2)
   @DisplayName("2. Login using an invalid username")
   void loginUsingAnInvalidUsername() throws Exception {
-    insertUser();
-
     AuthDto authDto = new AuthDto("root", "pass");
     String body = objectMapper.writeValueAsString(authDto);
 
@@ -100,8 +129,6 @@ class MeasureshelterApplicationTest {
   @Order(3)
   @DisplayName("3. Login using an invalid password")
   void loginUsingAnInvalidPassword() throws Exception {
-    insertUser();
-
     AuthDto authDto = new AuthDto("admin", "wrongpass");
     String body = objectMapper.writeValueAsString(authDto);
 
@@ -124,11 +151,11 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+    setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -149,11 +176,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -174,11 +200,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -200,11 +225,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -226,11 +250,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -251,11 +274,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -277,11 +299,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -303,11 +324,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -328,11 +348,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -354,11 +373,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -379,11 +397,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(5);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -405,11 +422,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(3601);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -431,11 +447,10 @@ class MeasureshelterApplicationTest {
     isleDto.setSamplingInterval(0);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -456,41 +471,15 @@ class MeasureshelterApplicationTest {
     isleDto.setIsItWorking(true);
 
     String body = objectMapper.writeValueAsString(isleDto);
-    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
 
     mockMvc
         .perform(post("/isle")
-            .headers(httpHeaders)
+            .headers(HTTP_HEADERS)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.message")
             .value("Isle already exists"));
-  }
-
-  private void insertUser() {
-    String encodedPassword = passwordEncoder.encode("pass");
-    User user = new User(null, "admin", encodedPassword, Role.ROLE_ADMIN);
-    userRepository.save(user);
-  }
-
-  private HttpHeaders getHeadersWithTokenByLoggingWithAdminUser() throws Exception {
-    insertUser();
-
-    AuthDto authDto = new AuthDto("admin", "pass");
-    String body = objectMapper.writeValueAsString(authDto);
-
-    MvcResult mvcResult = mockMvc
-        .perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body)).andReturn();
-
-    String contentAsString = mvcResult.getResponse().getContentAsString();
-
-    TokenReponseDto tokenDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
-    String token = tokenDto.getToken();
-
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setBearerAuth(token);
-    return httpHeaders;
   }
 }
