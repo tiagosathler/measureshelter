@@ -557,7 +557,7 @@ class MeasureshelterApplicationTest {
 
   @Test
   @Order(23)
-  @DisplayName("21. Isle - GET isle by id")
+  @DisplayName("23. Isle - GET isle by id")
   void getIsleById() throws Exception {
     mockMvc
         .perform(get("/isle/" + id).headers(HTTP_HEADERS))
@@ -576,5 +576,16 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
+
+  @Test
+  @Order(25)
+  @DisplayName("25. Isle - GET isle invalid id")
+  void getIsleByInvalidId() throws Exception {
+    mockMvc
+        .perform(get("/isle/648a5072c").headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("648a5072c is invalid Id"));
   }
 }
