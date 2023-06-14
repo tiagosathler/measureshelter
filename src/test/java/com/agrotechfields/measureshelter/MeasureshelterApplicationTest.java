@@ -521,4 +521,16 @@ class MeasureshelterApplicationTest {
         .andExpect(jsonPath("$[0].serialNumber").value("0000000001"))
         .andExpect(jsonPath("$[0].id").isNotEmpty());
   }
+
+  @Test
+  @Order(21)
+  @DisplayName("21. Isle - GET isle by serial number")
+  void getIsleBySerialNumber() throws Exception {
+    mockMvc
+        .perform(get("/isle/serial/0000000001").headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.serialNumber").value("0000000001"))
+        .andExpect(jsonPath("$.id").isNotEmpty());
+  }
 }
