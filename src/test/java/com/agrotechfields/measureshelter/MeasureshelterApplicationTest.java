@@ -76,6 +76,21 @@ class MeasureshelterApplicationTest {
         .andExpect(jsonPath("$.token").isString());
   }
 
+  @Test
+  @Order(2)
+  @DisplayName("2. Login using an invalid username")
+  void loginUsingAnInvalidUsername() throws Exception {
+    insertUser();
+
+    AuthDto authDto = new AuthDto("root", "pass");
+    String body = objectMapper.writeValueAsString(authDto);
+
+    mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.message").value("Bad credentials"));
+  }
+
   private void insertUser() {
     String encodedPassword = passwordEncoder.encode("pass");
     User user = new User(null, "admin", encodedPassword, Role.ROLE_ADMIN);
