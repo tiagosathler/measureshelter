@@ -162,6 +162,57 @@ class MeasureshelterApplicationTest {
             .value("serialNumber: must be 10 digits including numbers and capital letters"));
   }
 
+  @Test
+  @Order(6)
+  @DisplayName("6. Isle - post without a serial number")
+  void postWithoutASerialNumber() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setAltitude(BigDecimal.valueOf(1000));
+    isleDto.setIsItWorking(true);
+    isleDto.setSamplingInterval(5);
+
+    String body = objectMapper.writeValueAsString(isleDto);
+    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+
+    mockMvc
+        .perform(post("/isle")
+            .headers(httpHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message")
+            .value("serialNumber: must not be empty"));
+  }
+
+  @Test
+  @Order(7)
+  @DisplayName("7. Isle - post with a latitude greater than the limit")
+  void postWithALatitudeGreaterThanTheLimit() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(90));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setAltitude(BigDecimal.valueOf(1000));
+    isleDto.setIsItWorking(true);
+    isleDto.setSamplingInterval(5);
+
+    String body = objectMapper.writeValueAsString(isleDto);
+    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+
+    mockMvc
+        .perform(post("/isle")
+            .headers(httpHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message")
+            .value("latitude: must be less than 90"));
+  }
+
   private void insertUser() {
     String encodedPassword = passwordEncoder.encode("pass");
     User user = new User(null, "admin", encodedPassword, Role.ROLE_ADMIN);
