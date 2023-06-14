@@ -23,7 +23,7 @@ public class IsleResponseDto implements Serializable {
 
   /** The longitude. */
   private BigDecimal longitude;
-  
+
   /** The altitude. */
   private BigDecimal altitude;
 
@@ -32,6 +32,11 @@ public class IsleResponseDto implements Serializable {
 
   /** The sampling interval. */
   private Integer samplingInterval;
+
+  /**
+   * Instantiates a new isle response dto.
+   */
+  public IsleResponseDto() {}
 
   /**
    * Instantiates a new isle response default dto.
@@ -58,12 +63,30 @@ public class IsleResponseDto implements Serializable {
   }
 
   /**
+   * Sets the id.
+   *
+   * @param id the new id
+   */
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  /**
    * Gets the serial number.
    *
    * @return the serial number
    */
   public String getSerialNumber() {
     return serialNumber;
+  }
+
+  /**
+   * Sets the serial number.
+   *
+   * @param serialNumber the new serial number
+   */
+  public void setSerialNumber(String serialNumber) {
+    this.serialNumber = serialNumber;
   }
 
   /**
@@ -76,12 +99,31 @@ public class IsleResponseDto implements Serializable {
   }
 
   /**
+   * Sets the latitude.
+   *
+   * @param latitude the new latitude
+   */
+  public void setLatitude(BigDecimal latitude) {
+    this.latitude = latitude;
+  }
+
+
+  /**
    * Gets the longitude.
    *
    * @return the longitude
    */
   public BigDecimal getLongitude() {
     return longitude;
+  }
+
+  /**
+   * Sets the longitude.
+   *
+   * @param longitude the new longitude
+   */
+  public void setLongitude(BigDecimal longitude) {
+    this.longitude = longitude;
   }
 
   /**
@@ -94,6 +136,15 @@ public class IsleResponseDto implements Serializable {
   }
 
   /**
+   * Sets the altitude.
+   *
+   * @param altitude the new altitude
+   */
+  public void setAltitude(BigDecimal altitude) {
+    this.altitude = altitude;
+  }
+
+  /**
    * Gets the checks if is it working.
    *
    * @return the checks if is it working
@@ -103,11 +154,29 @@ public class IsleResponseDto implements Serializable {
   }
 
   /**
+   * Sets the checks if is it working.
+   *
+   * @param isItWorking the new checks if is it working
+   */
+  public void setIsItWorking(Boolean isItWorking) {
+    this.isItWorking = isItWorking;
+  }
+
+  /**
    * Gets the sampling interval.
    *
    * @return the sampling interval
    */
   public Integer getSamplingInterval() {
     return samplingInterval;
+  }
+
+  /**
+   * Sets the sampling interval.
+   *
+   * @param samplingInterval the new sampling interval
+   */
+  public void setSamplingInterval(Integer samplingInterval) {
+    this.samplingInterval = samplingInterval;
   }
 }
