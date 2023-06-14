@@ -104,7 +104,7 @@ class MeasureshelterApplicationTest {
   void loginUsingAValidUsername() throws Exception {
     insertAnAdminUserIntoTheDb();
 
-    AuthDto authDto = new AuthDto("admin", "pass");
+    AuthDto authDto = new AuthDto(ADMIN_USERNAME, ADMIN_PASSWORD);
     String body = objectMapper.writeValueAsString(authDto);
 
     mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
@@ -116,7 +116,7 @@ class MeasureshelterApplicationTest {
   @Order(2)
   @DisplayName("2. Login using an invalid username")
   void loginUsingAnInvalidUsername() throws Exception {
-    AuthDto authDto = new AuthDto("root", "pass");
+    AuthDto authDto = new AuthDto("wrongusername", ADMIN_PASSWORD);
     String body = objectMapper.writeValueAsString(authDto);
 
     mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
@@ -129,7 +129,7 @@ class MeasureshelterApplicationTest {
   @Order(3)
   @DisplayName("3. Login using an invalid password")
   void loginUsingAnInvalidPassword() throws Exception {
-    AuthDto authDto = new AuthDto("admin", "wrongpass");
+    AuthDto authDto = new AuthDto(ADMIN_USERNAME, "wrongpassword");
     String body = objectMapper.writeValueAsString(authDto);
 
     mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
@@ -140,7 +140,33 @@ class MeasureshelterApplicationTest {
 
   @Test
   @Order(4)
-  @DisplayName("4. Isle - create a valid Isle")
+  @DisplayName("4. Login without an username")
+  void loginWithoutAnUsername() throws Exception {
+    AuthDto authDto = new AuthDto(null, ADMIN_PASSWORD);
+    String body = objectMapper.writeValueAsString(authDto);
+
+    mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("username: must not be empty"));
+  }
+
+  @Test
+  @Order(5)
+  @DisplayName("5. Login without a password")
+  void loginWithoutAPassword() throws Exception {
+    AuthDto authDto = new AuthDto(ADMIN_USERNAME, null);
+    String body = objectMapper.writeValueAsString(authDto);
+
+    mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("password: must not be empty"));
+  }
+
+  @Test
+  @Order(6)
+  @DisplayName("6. Isle - create a valid Isle")
   void createAValidIsle() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -164,8 +190,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(5)
-  @DisplayName("5. Isle - post with an invalid serial number")
+  @Order(7)
+  @DisplayName("7. Isle - post with an invalid serial number")
   void postWithAnInvalidSerialNumber() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("000000001");
@@ -189,8 +215,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(6)
-  @DisplayName("6. Isle - post without a serial number")
+  @Order(8)
+  @DisplayName("8. Isle - post without a serial number")
   void postWithoutASerialNumber() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setLatitude(BigDecimal.valueOf(-21.00));
@@ -213,8 +239,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(7)
-  @DisplayName("7. Isle - post with a latitude greater than the limit")
+  @Order(9)
+  @DisplayName("9. Isle - post with a latitude greater than the limit")
   void postWithALatitudeGreaterThanTheLimit() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -238,8 +264,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(8)
-  @DisplayName("8. Isle - post with a latitude less than the limit")
+  @Order(10)
+  @DisplayName("10. Isle - post with a latitude less than the limit")
   void postWithALatitudeLessThanTheLimit() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -263,8 +289,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(9)
-  @DisplayName("9. Isle - post without a latitude")
+  @Order(11)
+  @DisplayName("11. Isle - post without a latitude")
   void postWithoutALatitude() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -287,8 +313,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(10)
-  @DisplayName("10. Isle - post with a longitude greater than the limit")
+  @Order(12)
+  @DisplayName("12. Isle - post with a longitude greater than the limit")
   void postWithALongitudeGreaterThanTheLimit() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -312,8 +338,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(11)
-  @DisplayName("11. Isle - post with a longitude less than the limit")
+  @Order(13)
+  @DisplayName("13. Isle - post with a longitude less than the limit")
   void postWithALongitudeLessThanTheLimit() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -337,8 +363,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(12)
-  @DisplayName("12. Isle - post without a longitude")
+  @Order(14)
+  @DisplayName("14. Isle - post without a longitude")
   void postWithoutALongitude() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -361,8 +387,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(13)
-  @DisplayName("13. Isle - post with an altitude less than the limit")
+  @Order(15)
+  @DisplayName("15. Isle - post with an altitude less than the limit")
   void postWithAnAltitudeLessThanTheLimit() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -386,8 +412,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(14)
-  @DisplayName("14. Isle - post without an altitude")
+  @Order(16)
+  @DisplayName("16. Isle - post without an altitude")
   void postWithoutAnAltitude() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -410,8 +436,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(15)
-  @DisplayName("15. Isle - post with a sampling interval greater than the limit")
+  @Order(17)
+  @DisplayName("17. Isle - post with a sampling interval greater than the limit")
   void postWithASamplingIntervalGreaterThanTheLimit() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -435,8 +461,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(16)
-  @DisplayName("16. Isle - post with a sampling interval less than the limit")
+  @Order(18)
+  @DisplayName("18. Isle - post with a sampling interval less than the limit")
   void postWithASamplingIntervalLessThanTheLimit() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
@@ -460,8 +486,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(17)
-  @DisplayName("17. Isle - post with an existing serial number")
+  @Order(19)
+  @DisplayName("19. Isle - post with an existing serial number")
   void postWithAnExistingSerialNumber() throws Exception {
     IsleDto isleDto = new IsleDto();
     isleDto.setSerialNumber("0000000001");
