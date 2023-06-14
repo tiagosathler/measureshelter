@@ -444,6 +444,31 @@ class MeasureshelterApplicationTest {
             .value("samplingInterval: must be greater than or equal to 1"));
   }
 
+  @Test
+  @Order(17)
+  @DisplayName("17. Isle - post with an existing serial number")
+  void postWithAnExistingSerialNumber() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setAltitude(BigDecimal.valueOf(100));
+    isleDto.setIsItWorking(true);
+
+    String body = objectMapper.writeValueAsString(isleDto);
+    HttpHeaders httpHeaders = getHeadersWithTokenByLoggingWithAdminUser();
+
+    mockMvc
+        .perform(post("/isle")
+            .headers(httpHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.message")
+            .value("Isle already exists"));
+  }
+
   private void insertUser() {
     String encodedPassword = passwordEncoder.encode("pass");
     User user = new User(null, "admin", encodedPassword, Role.ROLE_ADMIN);
