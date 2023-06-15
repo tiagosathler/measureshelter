@@ -914,4 +914,24 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("username: must not be a isle serial number"));
   }
+
+  @Test
+  @Order(43)
+  @DisplayName("43. User - POST with a password less than the limit")
+  void postWithAPasswordLessThanTheLimit() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setUsername(USER_USERNAME);
+    userDto.setPassword("12345");
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    mockMvc
+        .perform(post("/user")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("password: size must be between 6 and 14"));
+  }
 }
