@@ -1051,4 +1051,25 @@ class MeasureshelterApplicationTest {
         .andExpect(jsonPath("$.message").value("Isle user by the serial number '"+ ISLE_USERNAME +"' already exists"));
 
   }
+
+  @Test
+  @Order(49)
+  @DisplayName("49. User - POST registering a nonexisting isle")
+  void postRegisteringANonexistingIsle() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber("ISLE567890");
+    isleUserDto.setPassword(ISLE_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Isle not found"));
+
+  }
 }
