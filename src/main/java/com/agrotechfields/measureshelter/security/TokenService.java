@@ -41,6 +41,15 @@ public class TokenService {
    */
   public String encodeToken(User user) throws JWTCreationException {
     Algorithm algorithm = Algorithm.HMAC256(secret);
+    System.out.println("########");
+    System.out.println(secret);
+    System.out.println(validity);
+    System.out.println(user.getUsername());
+    System.out.println(user.getPassword());
+    System.out.println(ISSUER);
+    System.out.println(defineIssuedAt());
+    System.out.println(defineExpiresAt());
+    System.out.println("########");
     return JWT
         .create()
         .withIssuer(ISSUER)
