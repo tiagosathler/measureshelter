@@ -875,4 +875,43 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("username: size must be between 4 and 10"));
   }
+
+  @Test
+  @Order(41)
+  @DisplayName("41. User - POST without an username")
+  void postWithoutAnUsername() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setPassword(USER_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    mockMvc
+        .perform(post("/user")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("username: must not be blank"));
+  }
+
+  @Test
+  @Order(42)
+  @DisplayName("42. User - POST with an username using the serial number pattern")
+  void postWithAnUsernameUsingTheSerialNumberPattern() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setUsername(ISLE_USERNAME);
+    userDto.setPassword(USER_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    mockMvc
+        .perform(post("/user")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("username: must not be a isle serial number"));
+  }
 }
