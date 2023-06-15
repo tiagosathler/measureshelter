@@ -38,6 +38,7 @@ import com.agrotechfields.measureshelter.dto.response.IsleResponseDto;
 import com.agrotechfields.measureshelter.dto.response.TokenReponseDto;
 import com.agrotechfields.measureshelter.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 
 
 /**
@@ -99,10 +100,13 @@ class MeasureshelterApplicationTest {
         .perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body)).andReturn();
 
     String contentAsString = mvcResult.getResponse().getContentAsString();
+    String otherToken = JsonPath.parse(contentAsString).read("$.token");
 
     TokenReponseDto tokenDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
     token = tokenDto.getToken();
     System.out.println("======>> token: " + token + " <<======");
+    System.out.println("======>> otherToken: " + otherToken + " <<======");
+
     HTTP_HEADERS.setBearerAuth(token);
   }
 
