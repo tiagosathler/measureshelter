@@ -102,6 +102,7 @@ class MeasureshelterApplicationTest {
 
     TokenReponseDto tokenDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
     token = tokenDto.getToken();
+    System.out.println("======>> token: " + token + " <<======");
     HTTP_HEADERS.setBearerAuth(token);
   }
 
