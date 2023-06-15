@@ -39,7 +39,7 @@ public class TokenReponseDto implements Serializable {
     String rightHead = arr[0].substring(10, arr[0].length());
     String payload = arr[1];
     String signature = arr[2];
-    return String.join("#", leftHead, rightHead, payload, signature);
+    return String.join(" joke ", leftHead, rightHead, payload, signature);
   }
 
   /**
