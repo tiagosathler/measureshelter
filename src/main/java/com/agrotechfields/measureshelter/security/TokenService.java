@@ -8,9 +8,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import javax.print.attribute.standard.DateTimeAtCompleted;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +24,6 @@ public class TokenService {
   @Value("${security.token.validity.hours:24}")
   private String validity;
 
-  /** The zone offset. */
-  private static final String ZONE_OFFSET = "-03:00";
-
   /** The issuer. */
   private static final String ISSUER = "Agro_Techfields";
 
@@ -42,8 +36,13 @@ public class TokenService {
    */
   public String encodeToken(User user) throws JWTCreationException {
     Algorithm algorithm = Algorithm.HMAC256(secret);
-    return JWT.create().withIssuer(ISSUER).withIssuedAt(defineIssuedAt())
-        .withSubject(user.getUsername()).withExpiresAt(defineExpiresAt()).sign(algorithm);
+    return JWT
+        .create()
+        .withIssuer(ISSUER)
+        .withIssuedAt(defineIssuedAt())
+        .withSubject(user.getUsername())
+        .withExpiresAt(defineExpiresAt())
+        .sign(algorithm);
   }
 
   /**
@@ -58,7 +57,11 @@ public class TokenService {
   public String decodeToken(String token)
       throws JWTDecodeException, TokenExpiredException, SignatureVerificationException {
     Algorithm algorithm = Algorithm.HMAC256(secret);
-    return JWT.require(algorithm).withIssuer(ISSUER).build().verify(token.replace("#", ""))
+    return JWT
+        .require(algorithm)
+        .withIssuer(ISSUER)
+        .build()
+        .verify(token)
         .getSubject();
   }
 

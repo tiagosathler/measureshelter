@@ -103,9 +103,7 @@ class MeasureshelterApplicationTest {
     
     token = JsonPath.parse(contentAsString).read("$.token").toString();
 
-    System.out.println("======>> test token: " + token);
-
-    HTTP_HEADERS.add("Token", token);
+    HTTP_HEADERS.setBearerAuth(token);
   }
 
   @Test
