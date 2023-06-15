@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -28,10 +27,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   /** The user service. */
   @Autowired
   private UserService userService;
-
-  /** The password encoder. */
-  @Autowired
-  private PasswordEncoder passwordEncoder;
 
   /** The handler exception resolver. */
   @Autowired
@@ -73,17 +68,17 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
    * @return the token
    */
   private String getToken(HttpServletRequest request) {
-    String authorizationHeader = request.getHeader("Token");
-    System.out.println("====> Authorization: " + authorizationHeader);
-    if (authorizationHeader != null) {
-      String[] arr = authorizationHeader.split(" joke ");
-
-      String head = String.join("", arr[0], arr[1]);
-      String payload = arr[2];
-      String signature = arr[3];
-
-      return String.join(".", head, payload, signature);
-    }
-    return null;
+    String token = request.getHeader("Token");
+    System.out.println("====> Authorization: " + token);
+    //    if (token != null) {
+    //      String[] arr = authorizationHeader.split(" joke ");
+    //
+    //      String head = String.join("", arr[0], arr[1]);
+    //      String payload = arr[2];
+    //      String signature = arr[3];
+    //
+    // return String.join(".", head, payload, signature);
+    //    }
+    return token;
   }
 }

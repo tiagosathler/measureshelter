@@ -24,23 +24,23 @@ public class TokenReponseDto implements Serializable {
    * @param token the token
    */
   public TokenReponseDto(String token) {
-    this.token = encode(token);
+    this.token = token;
   }
 
-  /**
-   * Encode.
-   *
-   * @param token the token
-   * @return the string
-   */
-  private String encode(String token) {
-    String[] arr = token.split("\\.");
-    String leftHead = arr[0].substring(0, 10);
-    String rightHead = arr[0].substring(10, arr[0].length());
-    String payload = arr[1];
-    String signature = arr[2];
-    return String.join(" joke ", leftHead, rightHead, payload, signature);
-  }
+  //  /**
+  //   * Encode.
+  //   *
+  //   * @param token the token
+  //   * @return the string
+  //   */
+  //  private String encode(String token) {
+  //    String[] arr = token.split("\\.");
+  //    String leftHead = arr[0].substring(0, 10);
+  //    String rightHead = arr[0].substring(10, arr[0].length());
+  //    String payload = arr[1];
+  //    String signature = arr[2];
+  //    return String.join(" joke ", leftHead, rightHead, payload, signature);
+  //  }
 
   /**
    * Gets the token.
@@ -57,6 +57,6 @@ public class TokenReponseDto implements Serializable {
    * @param token the new token
    */
   public void setToken(String token) {
-    this.token = encode(token);
+    this.token = token;
   }
 }

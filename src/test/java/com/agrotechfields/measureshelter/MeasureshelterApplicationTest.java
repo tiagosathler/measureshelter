@@ -105,7 +105,7 @@ class MeasureshelterApplicationTest {
 
     System.out.println("======>> test token: " + token);
 
-    HTTP_HEADERS.add("token", token);
+    HTTP_HEADERS.add("Token", token);
   }
 
   @Test
