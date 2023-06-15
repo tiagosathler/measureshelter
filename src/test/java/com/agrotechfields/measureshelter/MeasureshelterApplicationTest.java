@@ -613,4 +613,65 @@ class MeasureshelterApplicationTest {
         .andExpect(jsonPath("$.serialNumber").value("0000000001"))
         .andExpect(jsonPath("$.altitude").value("100"));
   }
+
+  @Test
+  @Order(27)
+  @DisplayName("27. Isle - PUT by isle id with existing serial number")
+  void putByIsleIdWithExistingSerialNumber() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000002");
+    isleDto.setLatitude(BigDecimal.valueOf(14.00));
+    isleDto.setLongitude(BigDecimal.valueOf(-10.00));
+    isleDto.setAltitude(BigDecimal.valueOf(200));
+
+    String body = objectMapper.writeValueAsString(isleDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andReturn();
+
+    mockMvc
+        .perform(put("/isle/" + id)
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.message").value("Isle already exists"));
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+
+    IsleResponseDto isleResponseDto =
+        objectMapper.readValue(contentAsString, IsleResponseDto.class);
+
+    id = isleResponseDto.getId();
+  }
+
+  @Test
+  @Order(28)
+  @DisplayName("28. Isle - PUT by nonexisting isle id")
+  void putByNonexistingIsleId() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setAltitude(BigDecimal.valueOf(100));
+
+    String body = objectMapper.writeValueAsString(isleDto);
+
+    mockMvc
+        .perform(put("/isle/648a5072cbe534d1d321f28d")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
 }
