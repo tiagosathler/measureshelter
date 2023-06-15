@@ -1168,4 +1168,20 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("password: must not be blank"));
   }
+
+  @Test
+  @Order(55)
+  @DisplayName("55. User - GET all users")
+  void getAllUsers() throws Exception {
+    mockMvc
+        .perform(get("/user").headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(ids.get(ADMIN_USERNAME)))
+        .andExpect(jsonPath("$[0].username").value(ADMIN_USERNAME))
+        .andExpect(jsonPath("$[1].id").value(ids.get(USER_USERNAME)))
+        .andExpect(jsonPath("$[1].username").value(USER_USERNAME))
+        .andExpect(jsonPath("$[3].id").value(ids.get(ISLE_USERNAME)))
+        .andExpect(jsonPath("$[3].username").value(ISLE_USERNAME));
+  }
 }
