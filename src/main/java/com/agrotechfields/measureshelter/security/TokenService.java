@@ -10,6 +10,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import javax.print.attribute.standard.DateTimeAtCompleted;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -41,13 +42,8 @@ public class TokenService {
    */
   public String encodeToken(User user) throws JWTCreationException {
     Algorithm algorithm = Algorithm.HMAC256(secret);
-    return JWT
-        .create()
-        .withIssuer(ISSUER)
-        .withIssuedAt(defineIssuedAt())
-        .withSubject(user.getUsername())
-        .withExpiresAt(defineExpiresAt())
-        .sign(algorithm);
+    return JWT.create().withIssuer(ISSUER).withIssuedAt(defineIssuedAt())
+        .withSubject(user.getUsername()).withExpiresAt(defineExpiresAt()).sign(algorithm);
   }
 
   /**
@@ -62,11 +58,7 @@ public class TokenService {
   public String decodeToken(String token)
       throws JWTDecodeException, TokenExpiredException, SignatureVerificationException {
     Algorithm algorithm = Algorithm.HMAC256(secret);
-    return JWT
-        .require(algorithm)
-        .withIssuer(ISSUER)
-        .build()
-        .verify(token.replace("#", ""))
+    return JWT.require(algorithm).withIssuer(ISSUER).build().verify(token.replace("#", ""))
         .getSubject();
   }
 
@@ -76,10 +68,7 @@ public class TokenService {
    * @return the instant
    */
   private Instant defineExpiresAt() {
-    return LocalDateTime
-        .now()
-        .plusHours(Integer.parseInt(validity))
-        .toInstant(ZoneOffset.of(ZONE_OFFSET));
+    return Instant.now().plusSeconds(Integer.parseInt(validity) * 3600L);
   }
 
   /**
@@ -88,8 +77,6 @@ public class TokenService {
    * @return the instant
    */
   private Instant defineIssuedAt() {
-    return LocalDateTime
-        .now()
-        .toInstant(ZoneOffset.of(ZONE_OFFSET));
+    return Instant.now();
   }
 }
