@@ -55,8 +55,8 @@ public class Login {
     int headLength = arrOfString[0].length();
     
 
-    String leftHead = arrOfString[0].substring(0, headLength / 2);
-    String rightHead = arrOfString[0].substring(headLength / 2, headLength);
+    String leftHead = arrOfString[0].substring(0, 10);
+    String rightHead = arrOfString[0].substring(10, headLength);
     List<String> tokenParts = List.of(leftHead, rightHead, arrOfString[1], arrOfString[2]);
     tokenParts.forEach(System.out::println);
 
