@@ -34,12 +34,19 @@ public class TokenReponseDto implements Serializable {
    * @return the string
    */
   private String encode(String token) {
-    String[] arr = token.split("\\.");
-    String leftHead = arr[0].substring(0, 10);
-    String rightHead = arr[0].substring(10, arr[0].length());
-    String payload = arr[1];
-    String signature = arr[2];
-    return "#XABLAU#" + String.join("#XABLAU#", leftHead, rightHead, payload, signature);
+    StringBuilder sb = new StringBuilder("#");
+    for (int i = 0; i < token.length(); i++) {
+      sb.append(token.charAt(i));
+      sb.append("#");
+    }
+    return sb.toString();
+
+    // String[] arr = token.split("\\.");
+    // String leftHead = arr[0].substring(0, 10);
+    // String rightHead = arr[0].substring(10, arr[0].length());
+    // String payload = arr[1];
+    // String signature = arr[2];
+    // return "#XABLAU#" + String.join("#XABLAU#", leftHead, rightHead, payload, signature);
   }
 
   /**

@@ -71,13 +71,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     String token = request.getHeader("Token");
     System.out.println("====> Authorization: " + token);
     if (token != null) {
-      String[] arr = token.split("#XABLAU#");
-
-      String head = String.join("", arr[1], arr[2]);
-      String payload = arr[3];
-      String signature = arr[4];
-
-      return String.join(".", head, payload, signature);
+      return token.replace("#", "");
     }
     return token;
   }
