@@ -48,18 +48,18 @@ public class Login {
     Authentication authentication = authenticationManager.authenticate(authToken);
 
     String token = tokenService.encodeToken((User) authentication.getPrincipal());
-    System.out.println("------> token: " + token + " <------");
-    System.out.println("------> token: " + token.length() + " <------");
 
-    String[] arrOfString = token.split("\\.", 0);
-    int headLength = arrOfString[0].length();
+    String[] tokenParts = token.split("\\.", 0);
     
+    String leftHead = tokenParts[0].substring(0, 10);
+    String rightHead = tokenParts[0].substring(10, tokenParts[0].length());
 
-    String leftHead = arrOfString[0].substring(0, 10);
-    String rightHead = arrOfString[0].substring(10, headLength);
-    List<String> tokenParts = List.of(leftHead, rightHead, arrOfString[1], arrOfString[2]);
-    tokenParts.forEach(System.out::println);
+    TokenReponseDto tokenDto = new TokenReponseDto();
+    tokenDto.setLeftHead(leftHead);
+    tokenDto.setRightHead(rightHead);
+    tokenDto.setPayload(tokenParts[1]);
+    tokenDto.setSignature(tokenParts[2]);
 
-    return ResponseEntity.ok().body(new TokenReponseDto(token));
+    return ResponseEntity.ok().body(tokenDto);
   }
 }

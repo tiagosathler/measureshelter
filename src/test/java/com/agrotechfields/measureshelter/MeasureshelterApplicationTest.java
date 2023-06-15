@@ -100,14 +100,14 @@ class MeasureshelterApplicationTest {
         .perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body)).andReturn();
 
     String contentAsString = mvcResult.getResponse().getContentAsString();
-    System.out.println("======>> contentAsString: " + contentAsString + " <<======");
-
-    String otherToken = JsonPath.parse(contentAsString).read("$.token");
 
     TokenReponseDto tokenDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
-    token = tokenDto.getToken();
+    String head = tokenDto.getLeftHead() + tokenDto.getRightHead();
+    String payload = tokenDto.getPayload();
+    String signature = tokenDto.getSignature();
+
+    token = String.join(".", head, payload, signature);
     System.out.println("======>> token: " + token + " <<======");
-    System.out.println("======>> otherToken: " + otherToken + " <<======");
 
     HTTP_HEADERS.setBearerAuth(token);
   }
@@ -123,7 +123,7 @@ class MeasureshelterApplicationTest {
 
     mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-        .andExpect(jsonPath("$.token").isString());
+        .andExpect(jsonPath("$.payload").isNotEmpty());
   }
 
   @Test
