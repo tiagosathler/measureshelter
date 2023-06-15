@@ -145,7 +145,6 @@ public class ExceptionHandlerController {
   public ResponseEntity<ErrorPayload> handleTokenException(Exception e) {
     HttpStatus httpStatus = HttpStatus.FORBIDDEN;
     String msg = e.getMessage();
-    e.printStackTrace();
     return buildResponse(msg, httpStatus);
   }
 
@@ -160,7 +159,6 @@ public class ExceptionHandlerController {
   public ResponseEntity<ErrorPayload> handleInvalidToken(Exception e) {
     HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
     String msg = "Invalid token";
-    e.printStackTrace();
     return buildResponse(msg, httpStatus);
   }
 

@@ -51,7 +51,6 @@ public class Login {
 
     TokenReponseDto tokenResponseDto = new TokenReponseDto(token);
 
-    System.out.println("login controller =====> token: " + tokenResponseDto.getToken());
     return ResponseEntity.ok().body(tokenResponseDto);
   }
 }
