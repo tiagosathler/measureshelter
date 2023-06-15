@@ -806,6 +806,7 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.role").value(Role.ROLE_USER.name()))
         .andReturn();
 
     String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -813,5 +814,25 @@ class MeasureshelterApplicationTest {
     String id = JsonPath.parse(contentAsString).read("$.id").toString();
 
     ids.put(USER_USERNAME, id);
+  }
+
+  @Test
+  @Order(38)
+  @DisplayName("38. User - POST with an existing user")
+  void postWithAnExistingUser() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setUsername(USER_USERNAME);
+    userDto.setPassword(USER_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    mockMvc
+        .perform(post("/user")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.message").value("User already exists"));
   }
 }
