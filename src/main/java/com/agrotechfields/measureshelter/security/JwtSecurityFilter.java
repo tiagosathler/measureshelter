@@ -50,7 +50,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
       if (token != null) {
         System.out.println("gettoken: " + token.length());
-        String username = tokenService.decodeToken(token.toCharArray());
+        String username = tokenService.decodeToken(token);
         System.out.println("username: " + username);
         UserDetails user = userService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken auth =
@@ -72,9 +72,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   private String getToken(HttpServletRequest request) {
     String token = request.getHeader("Token");
     System.out.println("====> Authorization: " + token);
-    if (token != null) {
-      return token.replace("#", "");
-    }
     return token;
   }
 }
