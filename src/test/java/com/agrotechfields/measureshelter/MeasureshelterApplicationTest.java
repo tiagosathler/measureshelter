@@ -1090,4 +1090,23 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("serialNumber: must be 10 digits including numbers and capital letters"));
   }
+
+  @Test
+  @Order(51)
+  @DisplayName("51. User - POST registering an isle without serial number")
+  void postRegisteringAnIsleWithoutSerialNumber() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setPassword(ISLE_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("serialNumber: must not be blank"));
+  }
 }
