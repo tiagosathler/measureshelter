@@ -5,6 +5,7 @@ import com.agrotechfields.measureshelter.dto.request.AuthDto;
 import com.agrotechfields.measureshelter.dto.response.TokenReponseDto;
 import com.agrotechfields.measureshelter.security.TokenService;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,7 +50,11 @@ public class Login {
     String token = tokenService.encodeToken((User) authentication.getPrincipal());
     System.out.println("------> token: " + token + " <------");
     System.out.println("------> token: " + token.length() + " <------");
-    System.out.println("------> token: " + token.toString() + " <------");
+
+    String[] arrOfString = token.split("\\.", 0);
+    for (String s : arrOfString) {
+      System.out.println(s);
+    }
 
     return ResponseEntity.ok().body(new TokenReponseDto(token));
   }
