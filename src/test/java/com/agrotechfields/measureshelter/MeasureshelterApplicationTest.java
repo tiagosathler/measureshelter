@@ -835,4 +835,24 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.message").value("User already exists"));
   }
+
+  @Test
+  @Order(39)
+  @DisplayName("39. User - POST with an username less than the limit")
+  void postWithAnUsernameLessThanTheLimit() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setUsername("123");
+    userDto.setPassword(USER_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    mockMvc
+        .perform(post("/user")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("username: size must be between 4 and 10"));
+  }
 }
