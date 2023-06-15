@@ -55,19 +55,24 @@ public class TokenService {
   /**
    * Decode token.
    *
-   * @param token the token
+   * @param chars the chars
    * @return the string
    * @throws JWTDecodeException the JWT decode exception
    * @throws TokenExpiredException the token expired exception
+   * @throws SignatureVerificationException the signature verification exception
    */
   public String decodeToken(char[] chars)
       throws JWTDecodeException, TokenExpiredException, SignatureVerificationException {
     Algorithm algorithm = Algorithm.HMAC256(secret);
+    StringBuilder sb = new StringBuilder();
+    for (char c : chars) {
+      sb.append(c);
+    }
     return JWT
         .require(algorithm)
         .withIssuer(ISSUER)
         .build()
-        .verify(Arrays.toString(chars))
+        .verify(sb.toString())
         .getSubject();
   }
 
