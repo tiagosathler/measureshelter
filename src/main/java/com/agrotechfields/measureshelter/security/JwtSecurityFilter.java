@@ -33,8 +33,8 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   private HandlerExceptionResolver handlerExceptionResolver;
 
   /**
-   * Do filter internal.
-   * Ref: https://stackoverflow.com/questions/34595605/how-to-manage-exceptions-thrown-in-filters-in-spring
+   * Do filter internal. Ref:
+   * https://stackoverflow.com/questions/34595605/how-to-manage-exceptions-thrown-in-filters-in-spring
    *
    * @param request the request
    * @param response the response
@@ -70,15 +70,15 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   private String getToken(HttpServletRequest request) {
     String token = request.getHeader("Token");
     System.out.println("====> Authorization: " + token);
-    //    if (token != null) {
-    //      String[] arr = authorizationHeader.split(" joke ");
-    //
-    //      String head = String.join("", arr[0], arr[1]);
-    //      String payload = arr[2];
-    //      String signature = arr[3];
-    //
-    // return String.join(".", head, payload, signature);
-    //    }
+    if (token != null) {
+      String[] arr = token.split("#XABLAU#");
+
+      String head = String.join("", arr[1], arr[2]);
+      String payload = arr[3];
+      String signature = arr[4];
+
+      return String.join(".", head, payload, signature);
+    }
     return token;
   }
 }
