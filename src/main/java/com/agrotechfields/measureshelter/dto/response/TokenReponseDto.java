@@ -10,7 +10,7 @@ public class TokenReponseDto implements Serializable {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
-   /** The token. */
+  /** The token. */
   private String token;
 
   /**

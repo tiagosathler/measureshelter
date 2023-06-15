@@ -100,9 +100,8 @@ class MeasureshelterApplicationTest {
         .perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body)).andReturn();
 
     String contentAsString = mvcResult.getResponse().getContentAsString();
-
-    TokenReponseDto tokenResponseDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
-    token = tokenResponseDto.getToken();
+    
+    token = JsonPath.parse(contentAsString).read("$.token").toString();
 
     System.out.println("======>> test token: " + token);
 
@@ -120,7 +119,7 @@ class MeasureshelterApplicationTest {
 
     mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-        .andExpect(jsonPath("$.payload").isNotEmpty());
+        .andExpect(jsonPath("$.token").isNotEmpty());
   }
 
   @Test
