@@ -1,5 +1,6 @@
 package com.agrotechfields.measureshelter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -673,5 +674,56 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
+
+  @Test
+  @Order(29)
+  @DisplayName("29. Isle - PUT by invalid isle id")
+  void putByInvalidIsleId() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setAltitude(BigDecimal.valueOf(100));
+
+    String body = objectMapper.writeValueAsString(isleDto);
+
+    mockMvc
+        .perform(put("/isle/648a5072")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("648a5072 is invalid Id"));
+  }
+
+  @Test
+  @Order(30)
+  @DisplayName("30. Isle - DELETE by isle id")
+  void deleteByIsleId() throws Exception {
+    mockMvc
+        .perform(delete("/isle/" + id).headers(HTTP_HEADERS))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @Order(31)
+  @DisplayName("31. Isle - DELETE by nonexisting isle id")
+  void deleteByNonexistingIsleId() throws Exception {
+    mockMvc
+        .perform(delete("/isle/648a5072cbe534d1d321f28d").headers(HTTP_HEADERS))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
+
+  @Test
+  @Order(32)
+  @DisplayName("32. Isle - DELETE by invalid isle id")
+  void deleteByInvalidIsleId() throws Exception {
+    mockMvc
+        .perform(delete("/isle/648a5072").headers(HTTP_HEADERS))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("648a5072 is invalid Id"));
   }
 }
