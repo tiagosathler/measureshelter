@@ -52,9 +52,13 @@ public class Login {
     System.out.println("------> token: " + token.length() + " <------");
 
     String[] arrOfString = token.split("\\.", 0);
-    for (String s : arrOfString) {
-      System.out.println(s);
-    }
+    int headLength = arrOfString[0].length();
+    
+
+    String leftHead = arrOfString[0].substring(0, headLength / 2);
+    String rightHead = arrOfString[0].substring(headLength / 2, headLength);
+    List<String> tokenParts = List.of(leftHead, rightHead, arrOfString[1], arrOfString[2]);
+    tokenParts.forEach(System.out::println);
 
     return ResponseEntity.ok().body(new TokenReponseDto(token));
   }
