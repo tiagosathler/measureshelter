@@ -48,6 +48,8 @@ public class Login {
 
     String token = tokenService.encodeToken((User) authentication.getPrincipal());
     System.out.println("------> token: " + token + " <------");
+    System.out.println("------> token: " + token.length() + " <------");
+    System.out.println("------> token: " + token.toString() + " <------");
 
     return ResponseEntity.ok().body(new TokenReponseDto(token));
   }
