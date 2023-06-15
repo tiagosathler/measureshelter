@@ -37,6 +37,7 @@ import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
 import com.agrotechfields.measureshelter.dto.request.AuthDto;
 import com.agrotechfields.measureshelter.dto.request.IsleDto;
+import com.agrotechfields.measureshelter.dto.request.IsleUserDto;
 import com.agrotechfields.measureshelter.dto.request.UserDto;
 import com.agrotechfields.measureshelter.dto.response.IsleResponseDto;
 import com.agrotechfields.measureshelter.dto.response.TokenReponseDto;
@@ -1000,5 +1001,33 @@ class MeasureshelterApplicationTest {
     String id = JsonPath.parse(contentAsString).read("$.id").toString();
 
     ids.put("SECOND_ADMIN", id);
+  }
+
+  @Test
+  @Order(47)
+  @DisplayName("47. User - POST registering an existing isle")
+  void postRegisteringAnExistingIsle() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber(ISLE_USERNAME);
+    isleUserDto.setPassword(ISLE_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.role").value(Role.ROLE_ISLE.name()))
+        .andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+
+    String id = JsonPath.parse(contentAsString).read("$.id").toString();
+
+    ids.put(ISLE_USERNAME, id);
   }
 }
