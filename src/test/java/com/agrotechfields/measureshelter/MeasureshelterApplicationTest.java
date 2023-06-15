@@ -101,13 +101,10 @@ class MeasureshelterApplicationTest {
 
     String contentAsString = mvcResult.getResponse().getContentAsString();
 
-    TokenReponseDto tokenDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
-    String head = tokenDto.getLeftHead() + tokenDto.getRightHead();
-    String payload = tokenDto.getPayload();
-    String signature = tokenDto.getSignature();
+    TokenReponseDto tokenResponseDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
+    token = tokenResponseDto.getToken();
 
-    token = String.join(".", head, payload, signature);
-    System.out.println("======>> token: " + token + " <<======");
+    System.out.println("======>> test token: " + token);
 
     HTTP_HEADERS.setBearerAuth(token);
   }

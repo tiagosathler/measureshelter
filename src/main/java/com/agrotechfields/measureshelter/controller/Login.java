@@ -49,17 +49,9 @@ public class Login {
 
     String token = tokenService.encodeToken((User) authentication.getPrincipal());
 
-    String[] tokenParts = token.split("\\.", 0);
-    
-    String leftHead = tokenParts[0].substring(0, 10);
-    String rightHead = tokenParts[0].substring(10, tokenParts[0].length());
+    TokenReponseDto tokenResponseDto = new TokenReponseDto(token);
 
-    TokenReponseDto tokenDto = new TokenReponseDto();
-    tokenDto.setLeftHead(leftHead);
-    tokenDto.setRightHead(rightHead);
-    tokenDto.setPayload(tokenParts[1]);
-    tokenDto.setSignature(tokenParts[2]);
-
-    return ResponseEntity.ok().body(tokenDto);
+    System.out.println("login controller =====> token: " + tokenResponseDto.getToken());
+    return ResponseEntity.ok().body(tokenResponseDto);
   }
 }

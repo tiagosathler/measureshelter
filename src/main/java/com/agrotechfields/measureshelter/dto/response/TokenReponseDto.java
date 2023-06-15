@@ -10,17 +10,8 @@ public class TokenReponseDto implements Serializable {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
-  /** The right head. */
-  private String rightHead;
-
-  /** The left head. */
-  private String leftHead;
-
-  /** The payload. */
-  private String payload;
-
-  /** The signature. */
-  private String signature;
+   /** The token. */
+  private String token;
 
   /**
    * Instantiates a new token reponse dto.
@@ -30,88 +21,42 @@ public class TokenReponseDto implements Serializable {
   /**
    * Instantiates a new token reponse dto.
    *
-   * @param rightHead the right head
-   * @param leftHead the left head
-   * @param payload the payload
-   * @param signature the signature
+   * @param token the token
    */
-  public TokenReponseDto(String rightHead, String leftHead, String payload, String signature) {
-    this.leftHead = leftHead;
-    this.rightHead = rightHead;
-    this.payload = payload;
-    this.signature = signature;
+  public TokenReponseDto(String token) {
+    this.token = encode(token);
   }
 
   /**
-   * Gets the right head.
+   * Encode.
    *
-   * @return the right head
+   * @param token the token
+   * @return the string
    */
-  public String getRightHead() {
-    return rightHead;
+  private String encode(String token) {
+    String[] arr = token.split("\\.");
+    String leftHead = arr[0].substring(0, 10);
+    String rightHead = arr[0].substring(10, arr[0].length());
+    String payload = arr[1];
+    String signature = arr[2];
+    return String.join("#", leftHead, rightHead, payload, signature);
   }
 
   /**
-   * Sets the right head.
+   * Gets the token.
    *
-   * @param rightHead the new right head
+   * @return the token
    */
-  public void setRightHead(String rightHead) {
-    this.rightHead = rightHead;
+  public String getToken() {
+    return token;
   }
 
   /**
-   * Gets the left head.
+   * Sets the token.
    *
-   * @return the left head
+   * @param token the new token
    */
-  public String getLeftHead() {
-    return leftHead;
-  }
-
-  /**
-   * Sets the left head.
-   *
-   * @param leftHead the new left head
-   */
-  public void setLeftHead(String leftHead) {
-    this.leftHead = leftHead;
-  }
-
-  /**
-   * Gets the payload.
-   *
-   * @return the payload
-   */
-  public String getPayload() {
-    return payload;
-  }
-
-  /**
-   * Sets the payload.
-   *
-   * @param payload the new payload
-   */
-  public void setPayload(String payload) {
-    this.payload = payload;
-  }
-
-
-  /**
-   * Gets the signature.
-   *
-   * @return the signature
-   */
-  public String getSignature() {
-    return signature;
-  }
-
-  /**
-   * Sets the signature.
-   *
-   * @param signature the new signature
-   */
-  public void setSignature(String signature) {
-    this.signature = signature;
+  public void setToken(String token) {
+    this.token = encode(token);
   }
 }
