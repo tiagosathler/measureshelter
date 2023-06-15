@@ -49,7 +49,10 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
       String token = getToken(request);
 
       if (token != null) {
+        System.out.println("gettoken: " + token);
+        System.out.println("gettoken: " + token.length());
         String username = tokenService.decodeToken(token);
+        System.out.println("username: " + username);
         UserDetails user = userService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken auth =
             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
