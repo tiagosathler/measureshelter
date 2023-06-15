@@ -1109,4 +1109,24 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("serialNumber: must not be blank"));
   }
+
+  @Test
+  @Order(52)
+  @DisplayName("52. User - POST registering an isle with a password less than the limit")
+  void postRegisteringAnIsleWithAPasswordLessThanTheLimit() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber(ISLE_USERNAME);
+    isleUserDto.setPassword("1234");
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("password: size must be between 5 and 14"));
+  }
 }
