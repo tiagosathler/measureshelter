@@ -19,7 +19,7 @@ public class IsleUserDto {
   private String serialNumber;
 
   /** The password. */
-  @NotEmpty @Size(min = 5, max = 14)
+  @NotBlank @Size(min = 5, max = 14)
   private String password;
   
   /** The role. */

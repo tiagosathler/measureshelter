@@ -1129,4 +1129,43 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("password: size must be between 5 and 14"));
   }
+
+  @Test
+  @Order(53)
+  @DisplayName("53. User - POST registering an isle with a password greater than the limit")
+  void postRegisteringAnIsleWithAPasswordGreaterThanTheLimit() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber(ISLE_USERNAME);
+    isleUserDto.setPassword("123456789012345");
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("password: size must be between 5 and 14"));
+  }
+
+  @Test
+  @Order(54)
+  @DisplayName("54. User - POST registering an isle without a password")
+  void postRegisteringAnIsleWithoutAPassword() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber(ISLE_USERNAME);
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("password: must not be blank"));
+  }
 }
