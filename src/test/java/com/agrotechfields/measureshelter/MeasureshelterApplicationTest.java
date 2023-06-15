@@ -37,6 +37,7 @@ import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
 import com.agrotechfields.measureshelter.dto.request.AuthDto;
 import com.agrotechfields.measureshelter.dto.request.IsleDto;
+import com.agrotechfields.measureshelter.dto.request.UserDto;
 import com.agrotechfields.measureshelter.dto.response.IsleResponseDto;
 import com.agrotechfields.measureshelter.dto.response.TokenReponseDto;
 import com.agrotechfields.measureshelter.repository.UserRepository;
@@ -80,13 +81,13 @@ class MeasureshelterApplicationTest {
   }
 
   static final String ADMIN_USERNAME = "admin";
-  static final String ADMIN_PASSWORD = "pass";
+  static final String ADMIN_PASSWORD = "password";
   
-  static final String COMMON_USERNAME = "user";
-  static final String COMMON_PASSWORD = "pass";
+  static final String USER_USERNAME = "user";
+  static final String USER_PASSWORD = "password";
 
   static final String ISLE_USERNAME = "ISLE000001";
-  static final String ISLE_PASSWORD = "pass";
+  static final String ISLE_PASSWORD = "password";
   
   static final String NONEXISTING_ID = "648a5072cbe534d1d321f28d";
   static final String INVALID_ID = "648a5072cbe";
@@ -128,7 +129,8 @@ class MeasureshelterApplicationTest {
     String body = objectMapper.writeValueAsString(authDto);
 
     mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body))
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.token").isNotEmpty());
   }
 
@@ -726,6 +728,7 @@ class MeasureshelterApplicationTest {
   void deleteByNonexistingIsleId() throws Exception {
     mockMvc
         .perform(delete("/isle/" + NONEXISTING_ID).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Isle not found"));
   }
@@ -736,6 +739,7 @@ class MeasureshelterApplicationTest {
   void deleteByInvalidIsleId() throws Exception {
     mockMvc
         .perform(delete("/isle/" + INVALID_ID).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.message").value(INVALID_ID + " is invalid Id"));
   }
@@ -746,6 +750,7 @@ class MeasureshelterApplicationTest {
   void patchByIsleIdTogglingWorkingToFalse() throws Exception {
     mockMvc
         .perform(patch("/isle/toggle/" + ids.get(ISLE_USERNAME)).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isAccepted())
         .andExpect(jsonPath("$.isItWorking").value("false"));
   }
@@ -756,6 +761,7 @@ class MeasureshelterApplicationTest {
   void patchByIsleIdTogglingWorkingToTrue() throws Exception {
     mockMvc
         .perform(patch("/isle/toggle/" + ids.get(ISLE_USERNAME)).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isAccepted())
         .andExpect(jsonPath("$.isItWorking").value("true"));
   }
@@ -766,6 +772,7 @@ class MeasureshelterApplicationTest {
   void patchByNonexistingIsleId() throws Exception {
     mockMvc
         .perform(patch("/isle/toggle/" + NONEXISTING_ID).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Isle not found"));
   }
@@ -776,7 +783,35 @@ class MeasureshelterApplicationTest {
   void patchByInvalidIsleId() throws Exception {
     mockMvc
         .perform(patch("/isle/toggle/" + INVALID_ID).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.message").value(INVALID_ID + " is invalid Id"));
+  }
+
+  @Test
+  @Order(37)
+  @DisplayName("37. User - POST a valid common user")
+  void postAValidCommonUser() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setUsername(USER_USERNAME);
+    userDto.setPassword(USER_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/user")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+
+    String id = JsonPath.parse(contentAsString).read("$.id").toString();
+
+    ids.put(USER_USERNAME, id);
   }
 }
