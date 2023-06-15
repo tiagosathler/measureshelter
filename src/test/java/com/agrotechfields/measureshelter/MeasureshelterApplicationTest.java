@@ -2,6 +2,7 @@ package com.agrotechfields.measureshelter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -78,6 +79,7 @@ class MeasureshelterApplicationTest {
   static final String ADMIN_USERNAME = "admin";
   static final String ADMIN_PASSWORD = "pass";
   static String id;
+  static String nextId;
 
   static private String token;
   static private final HttpHeaders HTTP_HEADERS = new HttpHeaders();
@@ -651,7 +653,7 @@ class MeasureshelterApplicationTest {
     IsleResponseDto isleResponseDto =
         objectMapper.readValue(contentAsString, IsleResponseDto.class);
 
-    id = isleResponseDto.getId();
+    nextId = isleResponseDto.getId();
   }
 
   @Test
@@ -703,7 +705,7 @@ class MeasureshelterApplicationTest {
   @DisplayName("30. Isle - DELETE by isle id")
   void deleteByIsleId() throws Exception {
     mockMvc
-        .perform(delete("/isle/" + id).headers(HTTP_HEADERS))
+        .perform(delete("/isle/" + nextId).headers(HTTP_HEADERS))
         .andExpect(status().isNoContent());
   }
 
@@ -725,5 +727,45 @@ class MeasureshelterApplicationTest {
         .perform(delete("/isle/648a5072").headers(HTTP_HEADERS))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.message").value("648a5072 is invalid Id"));
+  }
+
+  @Test
+  @Order(33)
+  @DisplayName("33. Isle - PATCH by isle id toggling working to false")
+  void patchByIsleIdTogglingWorkingToFalse() throws Exception {
+    mockMvc
+        .perform(patch("/isle/toggle/" + id).headers(HTTP_HEADERS))
+        .andExpect(status().isAccepted())
+        .andExpect(jsonPath("$.isItWorking").value("false"));
+  }
+
+  @Test
+  @Order(34)
+  @DisplayName("34. Isle - PATCH by isle id toggling working to true")
+  void patchByIsleIdTogglingWorkingToTrue() throws Exception {
+    mockMvc
+        .perform(patch("/isle/toggle/" + id).headers(HTTP_HEADERS))
+        .andExpect(status().isAccepted())
+        .andExpect(jsonPath("$.isItWorking").value("true"));
+  }
+
+  @Test
+  @Order(35)
+  @DisplayName("35. Isle - PATCH by nonexisting isle id")
+  void patchByNonexistingIsleId() throws Exception {
+    mockMvc
+        .perform(patch("/isle/toggle/648a5072cbe534d1d321f28d").headers(HTTP_HEADERS))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
+
+  @Test
+  @Order(36)
+  @DisplayName("36. Isle - PATCH by invalid isle id")
+  void patchByInvalidIsleId() throws Exception {
+    mockMvc
+        .perform(patch("/isle/toggle/647912").headers(HTTP_HEADERS))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("647912 is invalid Id"));
   }
 }
