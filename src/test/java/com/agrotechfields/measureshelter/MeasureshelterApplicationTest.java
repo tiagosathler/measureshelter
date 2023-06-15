@@ -1184,4 +1184,16 @@ class MeasureshelterApplicationTest {
         .andExpect(jsonPath("$[3].id").value(ids.get(ISLE_USERNAME)))
         .andExpect(jsonPath("$[3].username").value(ISLE_USERNAME));
   }
+
+  @Test
+  @Order(56)
+  @DisplayName("56. User - GET user by valid id")
+  void getUserByValidId() throws Exception {
+    mockMvc
+        .perform(get("/user/" + ids.get(ISLE_USERNAME)).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(ids.get(ISLE_USERNAME)))
+        .andExpect(jsonPath("$.username").value(ISLE_USERNAME));
+  }
 }
