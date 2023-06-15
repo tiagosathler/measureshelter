@@ -1049,7 +1049,6 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.message").value("Isle user by the serial number '"+ ISLE_USERNAME +"' already exists"));
-
   }
 
   @Test
@@ -1070,6 +1069,25 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
 
+  @Test
+  @Order(50)
+  @DisplayName("50. User - POST registering an isle with invalid pattern for serial number")
+  void postRegisteringAnIsleWithInvalidPatternForSerialNumber() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber(USER_USERNAME);
+    isleUserDto.setPassword(ISLE_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("serialNumber: must be 10 digits including numbers and capital letters"));
   }
 }
