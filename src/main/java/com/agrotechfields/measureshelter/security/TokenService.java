@@ -2,7 +2,6 @@ package com.agrotechfields.measureshelter.security;
 
 import com.agrotechfields.measureshelter.domain.User;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -11,7 +10,6 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +62,6 @@ public class TokenService {
   public String decodeToken(String token)
       throws JWTDecodeException, TokenExpiredException, SignatureVerificationException {
     Algorithm algorithm = Algorithm.HMAC256(secret);
-    StringBuilder sb = new StringBuilder();
     return JWT
         .require(algorithm)
         .withIssuer(ISSUER)
