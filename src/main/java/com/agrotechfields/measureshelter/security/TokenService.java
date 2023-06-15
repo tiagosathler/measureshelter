@@ -8,8 +8,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +23,6 @@ public class TokenService {
   /** The validity. */
   @Value("${security.token.validity.hours:24}")
   private String validity;
-
-  /** The zone offset. */
-  private static final String ZONE_OFFSET = "-03:00";
 
   /** The issuer. */
   private static final String ISSUER = "Agro_Techfields";
@@ -57,6 +52,7 @@ public class TokenService {
    * @return the string
    * @throws JWTDecodeException the JWT decode exception
    * @throws TokenExpiredException the token expired exception
+   * @throws SignatureVerificationException the signature verification exception
    */
   public String decodeToken(String token)
       throws JWTDecodeException, TokenExpiredException, SignatureVerificationException {
@@ -75,10 +71,7 @@ public class TokenService {
    * @return the instant
    */
   private Instant defineExpiresAt() {
-    return LocalDateTime
-        .now()
-        .plusHours(Integer.parseInt(validity))
-        .toInstant(ZoneOffset.of(ZONE_OFFSET));
+    return Instant.now().plusSeconds(Integer.parseInt(validity) * 3600L);
   }
 
   /**
@@ -87,8 +80,6 @@ public class TokenService {
    * @return the instant
    */
   private Instant defineIssuedAt() {
-    return LocalDateTime
-        .now()
-        .toInstant(ZoneOffset.of(ZONE_OFFSET));
+    return Instant.now();
   }
 }

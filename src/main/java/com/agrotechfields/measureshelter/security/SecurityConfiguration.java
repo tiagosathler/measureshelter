@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 
 /**
  * The Class SecurityConfiguration.
@@ -65,6 +66,10 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
       JwtSecurityFilter jwtSecurityFilter, UserService userService) throws Exception {
     return httpSecurity
+        .headers(h -> {
+          h.frameOptions(f -> f.sameOrigin());
+          h.xssProtection(x -> x.headerValue(XXssProtectionHeaderWriter.HeaderValue.DISABLED));
+        })
         .csrf(csrf -> csrf.disable())
         .cors(cors -> cors.disable())
         .httpBasic(h -> h.disable())

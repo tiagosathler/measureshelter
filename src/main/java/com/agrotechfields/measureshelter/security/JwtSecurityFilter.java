@@ -33,8 +33,8 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   private HandlerExceptionResolver handlerExceptionResolver;
 
   /**
-   * Do filter internal.
-   * Ref: https://stackoverflow.com/questions/34595605/how-to-manage-exceptions-thrown-in-filters-in-spring
+   * Do filter internal. Ref:
+   * https://stackoverflow.com/questions/34595605/how-to-manage-exceptions-thrown-in-filters-in-spring
    *
    * @param request the request
    * @param response the response
@@ -55,7 +55,9 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
+
       filterChain.doFilter(request, response);
+
     } catch (Exception e) {
       handlerExceptionResolver.resolveException(request, response, null, e);
     }

@@ -94,18 +94,20 @@ public class IsleService {
       throws EntityNotFoundException, EntityAlreadyExistsException {
     Isle isle = findIsleById(objectId);
 
-    Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleDto.getSerialNumber());
+    if (!isle.getSerialNumber().equals(isleDto.getSerialNumber())) {
+      Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleDto.getSerialNumber());
 
-    if (foundIsle.isPresent()) {
-      throw new EntityAlreadyExistsException("Isle");
-    }
+      if (foundIsle.isPresent()) {
+        throw new EntityAlreadyExistsException("Isle");
+      }
 
-    Optional<User> foundUser = userRepository.findByUsername(isle.getSerialNumber());
+      Optional<User> foundUser = userRepository.findByUsername(isle.getSerialNumber());
 
-    if (foundUser.isPresent()) {
-      User user = foundUser.get();
-      user.setUsername(isleDto.getSerialNumber());
-      userRepository.save(user);
+      if (foundUser.isPresent()) {
+        User user = foundUser.get();
+        user.setUsername(isleDto.getSerialNumber());
+        userRepository.save(user);
+      }
     }
 
     Isle isleUptaded = isleDto.isleFromDto();
