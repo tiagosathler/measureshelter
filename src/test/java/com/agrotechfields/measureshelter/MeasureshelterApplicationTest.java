@@ -2,6 +2,7 @@ package com.agrotechfields.measureshelter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -587,5 +588,29 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.message").value("648a5072c is invalid Id"));
+  }
+
+  @Test
+  @Order(26)
+  @DisplayName("26. Isle - PUT by isle id with same serial number")
+  void putByIsleIdWithSameSerialNumber() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("0000000001");
+    isleDto.setLatitude(BigDecimal.valueOf(21.00));
+    isleDto.setLongitude(BigDecimal.valueOf(20.00));
+    isleDto.setAltitude(BigDecimal.valueOf(100));
+
+    String body = objectMapper.writeValueAsString(isleDto);
+
+    mockMvc
+        .perform(put("/isle/" + id)
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isAccepted())
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.serialNumber").value("0000000001"))
+        .andExpect(jsonPath("$.altitude").value("100"));
   }
 }
