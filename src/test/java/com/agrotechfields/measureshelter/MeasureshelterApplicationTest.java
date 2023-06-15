@@ -973,4 +973,32 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("password: must not be blank"));
   }
+
+  @Test
+  @Order(46)
+  @DisplayName("46. User - POST a valid admin user")
+  void postAValidAdminUser() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setUsername("admin2");
+    userDto.setPassword("password");
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/user?isAdmin=true")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.role").value(Role.ROLE_ADMIN.name()))
+        .andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+
+    String id = JsonPath.parse(contentAsString).read("$.id").toString();
+
+    ids.put("SECOND_ADMIN", id);
+  }
 }
