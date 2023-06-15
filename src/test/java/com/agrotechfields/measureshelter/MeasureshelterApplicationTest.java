@@ -100,6 +100,8 @@ class MeasureshelterApplicationTest {
         .perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(body)).andReturn();
 
     String contentAsString = mvcResult.getResponse().getContentAsString();
+    System.out.println("======>> contentAsString: " + contentAsString + " <<======");
+
     String otherToken = JsonPath.parse(contentAsString).read("$.token");
 
     TokenReponseDto tokenDto = objectMapper.readValue(contentAsString, TokenReponseDto.class);
