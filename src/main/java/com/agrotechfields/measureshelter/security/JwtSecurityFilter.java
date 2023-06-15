@@ -73,11 +73,10 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
    * @return the token
    */
   private String getToken(HttpServletRequest request) {
-    String authorizationHeader = request.getHeader("Authorization");
+    String authorizationHeader = request.getHeader("Token");
     System.out.println("====> Authorization: " + authorizationHeader);
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
-      String tokenEncoded = authorizationHeader.replace("Bearer ", "");
-      String[] arr = tokenEncoded.split(" joke ");
+    if (authorizationHeader != null) {
+      String[] arr = authorizationHeader.split(" joke ");
 
       String head = String.join("", arr[0], arr[1]);
       String payload = arr[2];
