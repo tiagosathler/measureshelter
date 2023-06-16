@@ -2164,4 +2164,57 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Isle not found"));
   }
+
+  @Test
+  @Order(109)
+  @DisplayName("109. Measure - PUT updating measure by its id")
+  void putUpdatingMeasureByItsId() throws Exception {
+    setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
+
+    resetMeasureDto();
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(put("/measure/" + ids.get(MEASURE))
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(ids.get(MEASURE)))
+        .andExpect(jsonPath("$.isleId").value(ids.get(ISLE_USERNAME)));
+  }
+
+  @Test
+  @Order(110)
+  @DisplayName("110. Measure - DELETE by id")
+  void deleteById() throws Exception {
+    resetMeasureDto();
+
+    setHeadersWithTokenByLogin(ISLE_USERNAME, ISLE_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.isleId").value(ids.get(ISLE_USERNAME)))
+        .andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+
+    String id = JsonPath.parse(contentAsString).read("$.id").toString();
+
+    setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
+
+    mockMvc
+        .perform(delete("/measure/" + id).headers(HTTP_HEADERS))
+        .andExpect(status().isNoContent());
+  }
 }
