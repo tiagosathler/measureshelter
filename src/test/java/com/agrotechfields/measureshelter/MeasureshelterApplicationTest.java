@@ -1378,4 +1378,16 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.message").value("User '" + ISLE_USERNAME + "' with role ROLE_ISLE does not have permission to do this"));
   }
+
+  @Test
+  @Order(67)
+  @DisplayName("67. User - PATCH trying to toggle role by nonexisting id")
+  void patchTryingToggleRoleByNonexistingId() throws Exception {
+    mockMvc
+        .perform(patch("/user/"+ NONEXISTING_ID + "/toggle/role")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("User not found"));
+  }
 }
