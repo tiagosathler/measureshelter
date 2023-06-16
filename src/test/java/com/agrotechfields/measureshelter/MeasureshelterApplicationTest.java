@@ -1390,4 +1390,16 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("User not found"));
   }
+
+  @Test
+  @Order(68)
+  @DisplayName("68. User - PATCH toggling user enabled by its id to false")
+  void patchTogglingUserEnabledByItsIdToFalse() throws Exception {
+    mockMvc
+        .perform(patch("/user/"+ ids.get(USER_USERNAME) + "/toggle/enable")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.isEnable").value("false"));
+  }
 }
