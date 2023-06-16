@@ -97,6 +97,8 @@ class MeasureshelterApplicationTest {
   private static final String INVALID_ID = "648a5072cbe";
   private static final String ANOTHER_ISLE = "ISLE000003";
 
+  private static final MeasureDto MEASURE_DTO = new MeasureDto();
+
   private static final Map<String, String> ids = new HashMap<>();
 
   private static String token;
@@ -122,6 +124,19 @@ class MeasureshelterApplicationTest {
     token = JsonPath.parse(contentAsString).read("$.token").toString();
 
     HTTP_HEADERS.setBearerAuth(token);
+  }
+
+  private void resetMeasureDto() {
+    MEASURE_DTO.setAirTemp(BigDecimal.valueOf(27.8));
+    MEASURE_DTO.setGndTemp(BigDecimal.valueOf(31.2));
+    MEASURE_DTO.setWindSpeed(BigDecimal.valueOf(4.2));
+    MEASURE_DTO.setWindDirection(BigDecimal.valueOf(45));
+    MEASURE_DTO.setIrradiance(BigDecimal.valueOf(1000.0));
+    MEASURE_DTO.setPressure(BigDecimal.valueOf(1024.0));
+    MEASURE_DTO.setAirHumidity(BigDecimal.valueOf(85.2));
+    MEASURE_DTO.setGndHumidity(BigDecimal.valueOf(60.0));
+    MEASURE_DTO.setPrecipitation(BigDecimal.valueOf(1.2));
+    MEASURE_DTO.setRainIntensity(BigDecimal.valueOf(0.2));
   }
 
   @Test
@@ -1479,19 +1494,9 @@ class MeasureshelterApplicationTest {
   void postCreatingANewMeasure() throws Exception {
     setHeadersWithTokenByLogin(ISLE_USERNAME, ISLE_PASSWORD);
 
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     MvcResult mvcResult = mockMvc
         .perform(post("/measure")
@@ -1514,19 +1519,10 @@ class MeasureshelterApplicationTest {
   @Order(74)
   @DisplayName("74. Measure - POST with airTemp less than the limit")
   void postWithAirTempLessThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(-20.9));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setAirTemp(BigDecimal.valueOf(-20.9));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1542,19 +1538,10 @@ class MeasureshelterApplicationTest {
   @Order(75)
   @DisplayName("75. Measure - POST with airTemp greater than the limit")
   void postWithAirTempGreaterThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(50.1));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setAirTemp(BigDecimal.valueOf(50.1));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1570,18 +1557,10 @@ class MeasureshelterApplicationTest {
   @Order(76)
   @DisplayName("76. Measure - POST without airTemp")
   void postWithoutAirTemp() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setAirTemp(null);
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1597,19 +1576,10 @@ class MeasureshelterApplicationTest {
   @Order(77)
   @DisplayName("77. Measure - POST with gndTemp less than the limit")
   void postWithGndTempLessThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(-30.9));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setGndTemp(BigDecimal.valueOf(-30.9));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1625,19 +1595,10 @@ class MeasureshelterApplicationTest {
   @Order(78)
   @DisplayName("78. Measure - POST with gndTemp greater than the limit")
   void postWithGndTempGreaterThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(61.1));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setGndTemp(BigDecimal.valueOf(61.1));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1653,19 +1614,10 @@ class MeasureshelterApplicationTest {
   @Order(79)
   @DisplayName("79. Measure - POST without gndTemp")
   void postWithoutGndTemp() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
+    resetMeasureDto();
+    MEASURE_DTO.setGndTemp(null);
 
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
-
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1681,19 +1633,10 @@ class MeasureshelterApplicationTest {
   @Order(80)
   @DisplayName("80. Measure - POST with windSpeed less than the limit")
   void postWithWindSpeedLessThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(-0.1));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setWindSpeed(BigDecimal.valueOf(-0.1));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1709,19 +1652,10 @@ class MeasureshelterApplicationTest {
   @Order(81)
   @DisplayName("81. Measure - POST with windSpeed greater than the limit")
   void postWithWindSpeedGreaterThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(30.1));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setWindSpeed(BigDecimal.valueOf(30.1));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1737,19 +1671,10 @@ class MeasureshelterApplicationTest {
   @Order(82)
   @DisplayName("82. Measure - POST without windSpeed")
   void postWithoutWindSpeed() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
+    resetMeasureDto();
+    MEASURE_DTO.setWindSpeed(null);
 
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
-
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1765,19 +1690,10 @@ class MeasureshelterApplicationTest {
   @Order(83)
   @DisplayName("83. Measure - POST with windDirection less than the limit")
   void postWithWindDirectionLessThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(-0.1));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setWindDirection(BigDecimal.valueOf(-0.1));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1793,19 +1709,10 @@ class MeasureshelterApplicationTest {
   @Order(84)
   @DisplayName("84. Measure - POST with windDirection greater than the limit")
   void postWithWindDirectionGreaterThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(360));
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setWindDirection(BigDecimal.valueOf(360));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1821,19 +1728,10 @@ class MeasureshelterApplicationTest {
   @Order(85)
   @DisplayName("85. Measure - POST without windDirection")
   void postWithoutWindDirection() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
+    resetMeasureDto();
+    MEASURE_DTO.setWindDirection(null);
 
-    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
-
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1849,19 +1747,10 @@ class MeasureshelterApplicationTest {
   @Order(86)
   @DisplayName("86. Measure - POST with irradiance less than the limit")
   void postWithIrradianceLessThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(-0.1));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setIrradiance(BigDecimal.valueOf(-0.1));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1877,19 +1766,10 @@ class MeasureshelterApplicationTest {
   @Order(87)
   @DisplayName("87. Measure - POST with irradiance greater than the limit")
   void postWithIrradianceGreaterThanTheLimit() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
-    measureDto.setIrradiance(BigDecimal.valueOf(1500.1));
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+    resetMeasureDto();
+    MEASURE_DTO.setIrradiance(BigDecimal.valueOf(1500.1));
 
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
@@ -1898,26 +1778,17 @@ class MeasureshelterApplicationTest {
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("irradiance: must be less than or equal 1500"));
+        .andExpect(jsonPath("$.message").value("irradiance: must be less than or equal to 1500"));
   }
 
   @Test
   @Order(88)
   @DisplayName("88. Measure - POST without irradiance")
   void postWithoutIrradiance() throws Exception {
-    MeasureDto measureDto = new MeasureDto();
-    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
-    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
-    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
-    measureDto.setWindDirection(BigDecimal.valueOf(45));
+    resetMeasureDto();
+    MEASURE_DTO.setIrradiance(null);
 
-    measureDto.setPressure(BigDecimal.valueOf(1024.0));
-    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
-    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
-    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
-    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
-
-    String body = objectMapper.writeValueAsString(measureDto);
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
 
     mockMvc
         .perform(post("/measure")
