@@ -1799,4 +1799,61 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("irradiance: must not be null"));
   }
+
+  @Test
+  @Order(89)
+  @DisplayName("89. Measure - POST with pressure less than the limit")
+  void postWithPressureLessThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setPressure(BigDecimal.valueOf(99.9));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("pressure: must be greater than or equal to 100"));
+  }
+
+  @Test
+  @Order(90)
+  @DisplayName("90. Measure - POST with pressure greater than the limit")
+  void postWithPressureGreaterThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setPressure(BigDecimal.valueOf(1200.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("pressure: must be less than or equal to 1200"));
+  }
+
+  @Test
+  @Order(91)
+  @DisplayName("91. Measure - POST without pressure")
+  void postWithoutPressure() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setPressure(null);
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("pressure: must not be null"));
+  }
 }
