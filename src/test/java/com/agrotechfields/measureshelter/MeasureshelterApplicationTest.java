@@ -1298,4 +1298,49 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Isle not found"));
   }
+
+  @Test
+  @Order(63)
+  @DisplayName("63. User - PUT trying to update an unregistered isle user")
+  void putTryingToUpdateAnUnregisteredIsleUser() throws Exception {
+    IsleDto isleDto = new IsleDto();
+    isleDto.setSerialNumber("ISLE000003");
+    isleDto.setLatitude(BigDecimal.valueOf(14.00));
+    isleDto.setLongitude(BigDecimal.valueOf(-10.00));
+    isleDto.setAltitude(BigDecimal.valueOf(200));
+    
+
+    String body = objectMapper.writeValueAsString(isleDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andReturn();
+
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber("ISLE000003");
+    isleUserDto.setPassword(ISLE_PASSWORD);
+
+    body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(put("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Register this isle first. Isle as user not found"));
+
+    String contextAsString = mvcResult.getResponse().getContentAsString();
+
+    String id = JsonPath.parse(contextAsString).read("$.id").toString();
+
+    ids.put("THIRD_ISLE", id);
+  }
 }
