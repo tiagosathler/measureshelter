@@ -1366,4 +1366,16 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.role").value(Role.ROLE_USER.name()));
   }
+
+  @Test
+  @Order(66)
+  @DisplayName("66. User - PATCH trying to toggle role of a isle user by its id")
+  void patchTryingToggleRoleOfAnIsleUserByItsId() throws Exception {
+    mockMvc
+        .perform(patch("/user/"+ ids.get(ISLE_USERNAME) + "/toggle/role")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.message").value("User '" + ISLE_USERNAME + "' with role ROLE_ISLE does not have permission to do this"));
+  }
 }
