@@ -1308,7 +1308,6 @@ class MeasureshelterApplicationTest {
     isleDto.setLatitude(BigDecimal.valueOf(14.00));
     isleDto.setLongitude(BigDecimal.valueOf(-10.00));
     isleDto.setAltitude(BigDecimal.valueOf(200));
-    
 
     String body = objectMapper.writeValueAsString(isleDto);
 
@@ -1342,5 +1341,17 @@ class MeasureshelterApplicationTest {
     String id = JsonPath.parse(contextAsString).read("$.id").toString();
 
     ids.put("THIRD_ISLE", id);
+  }
+
+  @Test
+  @Order(64)
+  @DisplayName("64. User - PATCH toggling user role by its id to admin role")
+  void patchTogglingUserRoleByItsIdToAdminRole() throws Exception {
+    mockMvc
+        .perform(patch("/user/"+ ids.get(USER_USERNAME) + "/toggle/role")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.role").value(Role.ROLE_ADMIN.name()));
   }
 }
