@@ -1537,4 +1537,32 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("airTemp: must be greater than or equal to -20"));
   }
+
+  @Test
+  @Order(75)
+  @DisplayName("75. Measure - POST with airTemp greater than the limit")
+  void postWithAirTempGreaterThanTheLimit() throws Exception {
+    MeasureDto measureDto = new MeasureDto();
+    measureDto.setAirTemp(BigDecimal.valueOf(50.1));
+    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
+    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
+    measureDto.setWindDirection(BigDecimal.valueOf(45));
+    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
+    measureDto.setPressure(BigDecimal.valueOf(1024.0));
+    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
+    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
+    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
+    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+
+    String body = objectMapper.writeValueAsString(measureDto);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("airTemp: must be less than or equal to 50"));
+  }
 }
