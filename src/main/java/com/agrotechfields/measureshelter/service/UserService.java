@@ -146,13 +146,12 @@ public class UserService implements UserDetailsService {
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   public User updateContextUser(UserDto userDto) throws EntityAlreadyExistsException {
+    User contextUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Optional<User> foundUser = userRepository.findByUsername(userDto.getUsername());
 
-    if (foundUser.isPresent()) {
+    if (foundUser.isPresent() && !foundUser.get().getUsername().equals(contextUser.getUsername())) {
       throw new EntityAlreadyExistsException("User");
     }
-
-    User contextUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     contextUser.setUsername(userDto.getUsername());
     contextUser.setPassword(passwordEncoder.encode(userDto.getPassword()));

@@ -1216,6 +1216,26 @@ class MeasureshelterApplicationTest {
         .perform(get("/user/" + INVALID_ID).headers(HTTP_HEADERS))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(INVALID_ID + "is invalid Id"));
+        .andExpect(jsonPath("$.message").value(INVALID_ID + " is invalid Id"));
+  }
+
+  @Test
+  @Order(59)
+  @DisplayName("59. User - PUT updating yourself")
+  void putUpdatingYourself() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setUsername(ADMIN_USERNAME);
+    userDto.setPassword(ADMIN_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    mockMvc
+        .perform(put("/user")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(ids.get(ADMIN_USERNAME)));
   }
 }
