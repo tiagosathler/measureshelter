@@ -155,10 +155,6 @@ public class IsleService {
    */
   public Isle getIsleFromContext() throws EntityNotFoundException {
     User contextUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Optional<Isle> foundIsle = isleRepository.findBySerialNumber(contextUser.getUsername());
-    if (foundIsle.isEmpty()) {
-      throw new EntityNotFoundException("Isle");
-    }
-    return foundIsle.get();
+    return findIsleBySerialNumber(contextUser.getUsername());
   }
 }
