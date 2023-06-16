@@ -1402,4 +1402,16 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.isEnable").value("false"));
   }
+
+  @Test
+  @Order(69)
+  @DisplayName("69. User - PATCH toggling disabled user by its id")
+  void patchTogglingDisabledUserByItsId() throws Exception {
+    mockMvc
+        .perform(patch("/user/"+ ids.get(USER_USERNAME) + "/toggle/enable")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.isEnable").value("true"));
+  }
 }
