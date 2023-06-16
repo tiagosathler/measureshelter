@@ -1196,4 +1196,15 @@ class MeasureshelterApplicationTest {
         .andExpect(jsonPath("$.id").value(ids.get(ISLE_USERNAME)))
         .andExpect(jsonPath("$.username").value(ISLE_USERNAME));
   }
+
+  @Test
+  @Order(57)
+  @DisplayName("57. User - GET user by nonexisting id")
+  void getUserByValidNonexistingId() throws Exception {
+    mockMvc
+        .perform(get("/user/" + NONEXISTING_ID).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("User not found"));
+  }
 }
