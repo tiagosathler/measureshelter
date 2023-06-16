@@ -53,6 +53,7 @@ import com.jayway.jsonpath.JsonPath;
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MeasureshelterApplicationTest {
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -81,22 +82,23 @@ class MeasureshelterApplicationTest {
   public void afterEach() {
   }
 
-  static final String ADMIN_USERNAME = "admin";
-  static final String ADMIN_PASSWORD = "password";
-  
-  static final String USER_USERNAME = "user";
-  static final String USER_PASSWORD = "password";
+  private static final String ADMIN_USERNAME = "admin";
+  private static final String ADMIN_PASSWORD = "password";
 
-  static final String ISLE_USERNAME = "ISLE000001";
-  static final String ISLE_PASSWORD = "password";
-  
-  static final String NONEXISTING_ID = "648a5072cbe534d1d321f28d";
-  static final String INVALID_ID = "648a5072cbe";
+  private static final String USER_USERNAME = "user";
+  private static final String USER_PASSWORD = "password";
 
-  static private final Map<String, String> ids = new HashMap<>();
+  private static final String ISLE_USERNAME = "ISLE000001";
+  private static final String ISLE_PASSWORD = "password";
 
-  static private String token;
-  static private final HttpHeaders HTTP_HEADERS = new HttpHeaders();
+  private static final String NONEXISTING_ID = "648a5072cbe534d1d321f28d";
+  private static final String INVALID_ID = "648a5072cbe";
+  private static final String ANOTHER_ISLE = "ISLE000003";
+
+  private static final Map<String, String> ids = new HashMap<>();
+
+  private static String token;
+  private static final HttpHeaders HTTP_HEADERS = new HttpHeaders();
 
   private void insertAnAdminUserIntoTheDb() {
     String encodedPassword = passwordEncoder.encode(ADMIN_PASSWORD);
@@ -1304,7 +1306,7 @@ class MeasureshelterApplicationTest {
   @DisplayName("63. User - PUT trying to update an unregistered isle user")
   void putTryingToUpdateAnUnregisteredIsleUser() throws Exception {
     IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber("ISLE000003");
+    isleDto.setSerialNumber(ANOTHER_ISLE);
     isleDto.setLatitude(BigDecimal.valueOf(14.00));
     isleDto.setLongitude(BigDecimal.valueOf(-10.00));
     isleDto.setAltitude(BigDecimal.valueOf(200));
@@ -1322,7 +1324,7 @@ class MeasureshelterApplicationTest {
         .andReturn();
 
     IsleUserDto isleUserDto = new IsleUserDto();
-    isleUserDto.setSerialNumber("ISLE000003");
+    isleUserDto.setSerialNumber(ANOTHER_ISLE);
     isleUserDto.setPassword(ISLE_PASSWORD);
 
     body = objectMapper.writeValueAsString(isleUserDto);
@@ -1340,7 +1342,7 @@ class MeasureshelterApplicationTest {
 
     String id = JsonPath.parse(contextAsString).read("$.id").toString();
 
-    ids.put("THIRD_ISLE", id);
+    ids.put(ANOTHER_ISLE, id);
   }
 
   @Test
@@ -1425,5 +1427,35 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("User not found"));
+  }
+
+  @Test
+  @Order(71)
+  @DisplayName("71. User - DELETE by user id")
+  void deleteByUserId() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber(ANOTHER_ISLE);
+    isleUserDto.setPassword(ISLE_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andReturn();
+    
+    String contextAsString = mvcResult.getResponse().getContentAsString();
+
+    String id = JsonPath.parse(contextAsString).read("$.id").toString();
+
+    mockMvc
+        .perform(delete("/user/" + id)
+            .headers(HTTP_HEADERS))
+        .andExpect(status().isNoContent());
   }
 }
