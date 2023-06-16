@@ -1856,4 +1856,118 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("pressure: must not be null"));
   }
+
+  @Test
+  @Order(92)
+  @DisplayName("92. Measure - POST with airHumidity less than the limit")
+  void postWithAirHumidityLessThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setAirHumidity(BigDecimal.valueOf(-0.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("airHumidity: must be greater than or equal to 0"));
+  }
+
+  @Test
+  @Order(93)
+  @DisplayName("93. Measure - POST with airHumidity greater than the limit")
+  void postWithAirHumidityGreaterThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setAirHumidity(BigDecimal.valueOf(100.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("airHumidity: must be less than or equal to 100"));
+  }
+
+  @Test
+  @Order(94)
+  @DisplayName("94. Measure - POST without airHumidity")
+  void postWithoutAirHumidity() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setAirHumidity(null);
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("airHumidity: must not be null"));
+  }
+
+  @Test
+  @Order(95)
+  @DisplayName("95. Measure - POST with gndHumidity less than the limit")
+  void postWithGndHumidityLessThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setGndHumidity(BigDecimal.valueOf(-0.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("gndHumidity: must be greater than or equal to 0"));
+  }
+
+  @Test
+  @Order(96)
+  @DisplayName("96. Measure - POST with gndHumidity greater than the limit")
+  void postWithGndHumidityGreaterThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setGndHumidity(BigDecimal.valueOf(100.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("gndHumidity: must be less than or equal to 100"));
+  }
+
+  @Test
+  @Order(97)
+  @DisplayName("97. Measure - POST without gndHumidity")
+  void postWithoutGndHumidity() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setGndHumidity(null);
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("gndHumidity: must not be null"));
+  }
 }
