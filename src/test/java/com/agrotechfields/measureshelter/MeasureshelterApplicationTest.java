@@ -1207,4 +1207,15 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("User not found"));
   }
+
+  @Test
+  @Order(58)
+  @DisplayName("57. User - GET user by invalid id")
+  void getUserByInvalidId() throws Exception {
+    mockMvc
+        .perform(get("/user/" + INVALID_ID).headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(INVALID_ID + "is invalid Id"));
+  }
 }
