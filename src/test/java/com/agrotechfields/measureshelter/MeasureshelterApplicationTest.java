@@ -53,7 +53,7 @@ import com.jayway.jsonpath.JsonPath;
 @Testcontainers
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class MeasureshelterApplicationTest {
+class MeasureshelterApplicationTest implements resetIsleDto {
   @Autowired
   private MockMvc mockMvc;
 
@@ -101,6 +101,7 @@ class MeasureshelterApplicationTest {
   private static final String INVALID_ID = "648a5072cbe";
 
   private static final MeasureDto MEASURE_DTO = new MeasureDto();
+  private static final IsleDto ISLE_DTO = new IsleDto();
 
   private static final Map<String, String> ids = new HashMap<>();
 
@@ -128,6 +129,15 @@ class MeasureshelterApplicationTest {
     token = JsonPath.parse(contentAsString).read("$.token").toString();
 
     HTTP_HEADERS.setBearerAuth(token);
+  }
+
+  private void resetIsleDto() {
+    ISLE_DTO.setSerialNumber(ISLE_USERNAME);
+    ISLE_DTO.setLatitude(BigDecimal.valueOf(-21.00));
+    ISLE_DTO.setLongitude(BigDecimal.valueOf(20.00));
+    ISLE_DTO.setAltitude(BigDecimal.valueOf(1000));
+    ISLE_DTO.setIsItWorking(true);
+    ISLE_DTO.setSamplingInterval(5);
   }
 
   private void resetMeasureDto() {
@@ -214,16 +224,11 @@ class MeasureshelterApplicationTest {
   @Order(6)
   @DisplayName("6. Isle - POST a valid Isle")
   void postAValidIsle() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
-
-    String body = objectMapper.writeValueAsString(isleDto);
     setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
+
+    resetIsleDto();
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     MvcResult mvcResult = mockMvc
         .perform(post("/isle")
@@ -233,6 +238,12 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").isString())
+        .andExpect(jsonPath("$.serialNumber").value(ISLE_DTO.getSerialNumber()))
+        .andExpect(jsonPath("$.latitude").value(ISLE_DTO.getLatitude().toString()))
+        .andExpect(jsonPath("$.longitude").value(ISLE_DTO.getLongitude().toString()))
+        .andExpect(jsonPath("$.altitude").value(ISLE_DTO.getAltitude().toString()))
+        .andExpect(jsonPath("$.samplingInterval").value(ISLE_DTO.getSamplingInterval().toString()))
+        .andExpect(jsonPath("$.isItWorking").value(ISLE_DTO.getIsItWorking().toString()))
         .andReturn();
 
     String contentAsString = mvcResult.getResponse().getContentAsString();
@@ -246,15 +257,11 @@ class MeasureshelterApplicationTest {
   @Order(7)
   @DisplayName("7. Isle - POST with an invalid serial number")
   void postWithAnInvalidSerialNumber() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber("000000001");
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setSerialNumber("000000001");
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -271,14 +278,11 @@ class MeasureshelterApplicationTest {
   @Order(8)
   @DisplayName("8. Isle - POST without a serial number")
   void postWithoutASerialNumber() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setSerialNumber(null);
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -295,15 +299,11 @@ class MeasureshelterApplicationTest {
   @Order(9)
   @DisplayName("9. Isle - POST with a latitude greater than the limit")
   void postWithALatitudeGreaterThanTheLimit() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(90));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setLatitude(BigDecimal.valueOf(90));
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -320,15 +320,11 @@ class MeasureshelterApplicationTest {
   @Order(10)
   @DisplayName("10. Isle - POST with a latitude less than the limit")
   void postWithALatitudeLessThanTheLimit() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-90));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setLatitude(BigDecimal.valueOf(-90));
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -345,14 +341,11 @@ class MeasureshelterApplicationTest {
   @Order(11)
   @DisplayName("11. Isle - POST without a latitude")
   void postWithoutALatitude() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setLatitude(null);
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -369,15 +362,11 @@ class MeasureshelterApplicationTest {
   @Order(12)
   @DisplayName("12. Isle - POST with a longitude greater than the limit")
   void postWithALongitudeGreaterThanTheLimit() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(180.01));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setLongitude(BigDecimal.valueOf(180.01));
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -394,15 +383,11 @@ class MeasureshelterApplicationTest {
   @Order(13)
   @DisplayName("13. Isle - POST with a longitude less than the limit")
   void postWithALongitudeLessThanTheLimit() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(-180.00));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setLongitude(BigDecimal.valueOf(-180.00));
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -419,14 +404,11 @@ class MeasureshelterApplicationTest {
   @Order(14)
   @DisplayName("14. Isle - POST without a longitude")
   void postWithoutALongitude() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setLongitude(null);
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -443,15 +425,11 @@ class MeasureshelterApplicationTest {
   @Order(15)
   @DisplayName("15. Isle - POST with an altitude less than the limit")
   void postWithAnAltitudeLessThanTheLimit() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(0));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setAltitude(BigDecimal.valueOf(0));
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -468,14 +446,11 @@ class MeasureshelterApplicationTest {
   @Order(16)
   @DisplayName("16. Isle - POST without an altitude")
   void postWithoutAnAltitude() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(5);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setAltitude(null);
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -492,15 +467,11 @@ class MeasureshelterApplicationTest {
   @Order(17)
   @DisplayName("17. Isle - POST with a sampling interval greater than the limit")
   void postWithASamplingIntervalGreaterThanTheLimit() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.01));
-    isleDto.setAltitude(BigDecimal.valueOf(1000));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(3601);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setSamplingInterval(3601);
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -517,15 +488,11 @@ class MeasureshelterApplicationTest {
   @Order(18)
   @DisplayName("18. Isle - POST with a sampling interval less than the limit")
   void postWithASamplingIntervalLessThanTheLimit() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.01));
-    isleDto.setAltitude(BigDecimal.valueOf(3601));
-    isleDto.setIsItWorking(true);
-    isleDto.setSamplingInterval(0);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setSamplingInterval(0);
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -542,14 +509,9 @@ class MeasureshelterApplicationTest {
   @Order(19)
   @DisplayName("19. Isle - POST with an existing serial number")
   void postWithAnExistingSerialNumber() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(-21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(100));
-    isleDto.setIsItWorking(true);
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(post("/isle")
@@ -635,13 +597,11 @@ class MeasureshelterApplicationTest {
   @Order(26)
   @DisplayName("26. Isle - PUT by isle id with same serial number")
   void putByIsleIdWithSameSerialNumber() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(100));
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    ISLE_DTO.setAltitude(BigDecimal.valueOf(100));
+
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(put("/isle/" + ids.get(ISLE_USERNAME))
@@ -659,13 +619,11 @@ class MeasureshelterApplicationTest {
   @Order(27)
   @DisplayName("27. Isle - PUT by isle id with existing serial number")
   void putByIsleIdWithExistingSerialNumber() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber("ISLE000002");
-    isleDto.setLatitude(BigDecimal.valueOf(14.00));
-    isleDto.setLongitude(BigDecimal.valueOf(-10.00));
-    isleDto.setAltitude(BigDecimal.valueOf(200));
+    resetIsleDto();
+    
+    ISLE_DTO.setSerialNumber("ISLE000002");
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     MvcResult mvcResult = mockMvc
         .perform(post("/isle")
@@ -697,13 +655,9 @@ class MeasureshelterApplicationTest {
   @Order(28)
   @DisplayName("28. Isle - PUT by nonexisting isle id")
   void putByNonexistingIsleId() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber(ISLE_USERNAME);
-    isleDto.setLatitude(BigDecimal.valueOf(21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(100));
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(put("/isle/" + NONEXISTING_ID)
@@ -719,13 +673,9 @@ class MeasureshelterApplicationTest {
   @Order(29)
   @DisplayName("29. Isle - PUT by invalid isle id")
   void putByInvalidIsleId() throws Exception {
-    IsleDto isleDto = new IsleDto();
-    isleDto.setSerialNumber("0000000001");
-    isleDto.setLatitude(BigDecimal.valueOf(21.00));
-    isleDto.setLongitude(BigDecimal.valueOf(20.00));
-    isleDto.setAltitude(BigDecimal.valueOf(100));
+    resetIsleDto();
 
-    String body = objectMapper.writeValueAsString(isleDto);
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
 
     mockMvc
         .perform(put("/isle/" + INVALID_ID)
@@ -2258,5 +2208,88 @@ class MeasureshelterApplicationTest {
     mockMvc
         .perform(delete("/measure/" + id).headers(HTTP_HEADERS))
         .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @Order(112)
+  @DisplayName("112. EXTRA - Updating and delete isle already registered")
+  void extraUpdatingAndDeleteIsleAlreadyRegistered() throws Exception {
+    setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
+
+    // creating a new isle
+    resetIsleDto();
+    ISLE_DTO.setSerialNumber("ISLE000005");
+    
+    String body = objectMapper.writeValueAsString(ISLE_DTO);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+    
+    String isleId = JsonPath.parse(contentAsString).read("$.id").toString();
+
+    // registering the new isle to users
+    IsleUserDto isleUserDto = new IsleUserDto(ISLE_DTO.getSerialNumber(), "123456");
+
+    body = objectMapper.writeValueAsString(isleUserDto);
+
+    mvcResult = mockMvc
+        .perform(post("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andReturn();
+
+    contentAsString = mvcResult.getResponse().getContentAsString();
+    
+    String isleUserId = JsonPath.parse(contentAsString).read("$.id").toString();
+
+    // updating the serial number of the current isle
+    resetIsleDto();
+    ISLE_DTO.setSerialNumber("ISLE000006");
+
+    body = objectMapper.writeValueAsString(ISLE_DTO);
+
+    mockMvc
+        .perform(put("/isle/" + isleId)
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isAccepted())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.id").value(isleId))
+        .andExpect(jsonPath("$.serialNumber").value("ISLE000006"));
+
+    // checking if isle user has also been updated
+    mockMvc
+        .perform(get("/user/" + isleUserId).headers(HTTP_HEADERS))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.id").value(isleUserId))
+        .andExpect(jsonPath("$.username").value("ISLE000006"));
+
+    // and now
+    // deleting the current isle
+    mockMvc
+        .perform(delete("/isle/" + isleId).headers(HTTP_HEADERS))
+        .andExpect(status().isNoContent());
+
+    // checking if isle user has also been deleted
+    mockMvc
+        .perform(get("/user/" + isleUserId).headers(HTTP_HEADERS))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.message").value("User not found"));
   }
 }
