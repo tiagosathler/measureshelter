@@ -54,9 +54,6 @@ import com.jayway.jsonpath.JsonPath;
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MeasureshelterApplicationTest {
-
-  private static final String MEASURE = "MEASURE";
-
   @Autowired
   private MockMvc mockMvc;
 
@@ -93,6 +90,8 @@ class MeasureshelterApplicationTest {
 
   private static final String ISLE_USERNAME = "ISLE000001";
   private static final String ISLE_PASSWORD = "password";
+
+  private static final String MEASURE = "MEASURE";
 
   private static final String NONEXISTING_ID = "648a5072cbe534d1d321f28d";
   private static final String INVALID_ID = "648a5072cbe";
@@ -1509,5 +1508,33 @@ class MeasureshelterApplicationTest {
     String id = JsonPath.parse(contentAsString).read("$.id").toString();
     
     ids.put(MEASURE, id);
+  }
+
+  @Test
+  @Order(74)
+  @DisplayName("74. Measure - POST with airTemp less than the limit")
+  void postWithAirTempLessThanTheLimit() throws Exception {
+    MeasureDto measureDto = new MeasureDto();
+    measureDto.setAirTemp(BigDecimal.valueOf(-20.9));
+    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
+    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
+    measureDto.setWindDirection(BigDecimal.valueOf(45));
+    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
+    measureDto.setPressure(BigDecimal.valueOf(1024.0));
+    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
+    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
+    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
+    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+
+    String body = objectMapper.writeValueAsString(measureDto);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("airTemp: must be greater than or equal to -20"));
   }
 }
