@@ -2027,4 +2027,61 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("precipitation: must not be null"));
   }
+
+  @Test
+  @Order(101)
+  @DisplayName("101. Measure - POST with rainIntensity less than the limit")
+  void postWithRainIntensityThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setRainIntensity(BigDecimal.valueOf(-0.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("rainIntensity: must be greater than or equal to 0"));
+  }
+
+  @Test
+  @Order(102)
+  @DisplayName("102. Measure - POST with rainIntensity greater than the limit")
+  void postWithRainIntensityGreaterThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setRainIntensity(BigDecimal.valueOf(1000.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("rainIntensity: must be less than or equal to 1000"));
+  }
+
+  @Test
+  @Order(103)
+  @DisplayName("103. Measure - POST without rainIntensity")
+  void postWithoutRainIntensity() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setRainIntensity(null);
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("rainIntensity: must not be null"));
+  }
 }
