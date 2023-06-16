@@ -91,17 +91,21 @@ class MeasureshelterApplicationTest {
   private static final String ISLE_USERNAME = "ISLE000001";
   private static final String ISLE_PASSWORD = "password";
 
+  private static final String ANOTHER_ISLE = "ISLE000003";
+
+  private static final String ISLE_USER_ID = "isleUserId";
+
   private static final String MEASURE = "MEASURE";
 
   private static final String NONEXISTING_ID = "648a5072cbe534d1d321f28d";
   private static final String INVALID_ID = "648a5072cbe";
-  private static final String ANOTHER_ISLE = "ISLE000003";
 
   private static final MeasureDto MEASURE_DTO = new MeasureDto();
 
   private static final Map<String, String> ids = new HashMap<>();
 
   private static String token;
+
   private static final HttpHeaders HTTP_HEADERS = new HttpHeaders();
 
   private void insertAnAdminUserIntoTheDb() {
@@ -1047,7 +1051,7 @@ class MeasureshelterApplicationTest {
 
     String id = JsonPath.parse(contentAsString).read("$.id").toString();
 
-    ids.put(ISLE_USERNAME, id);
+    ids.put(ISLE_USER_ID, id);
   }
 
   @Test
@@ -1200,7 +1204,7 @@ class MeasureshelterApplicationTest {
         .andExpect(jsonPath("$[0].username").value(ADMIN_USERNAME))
         .andExpect(jsonPath("$[1].id").value(ids.get(USER_USERNAME)))
         .andExpect(jsonPath("$[1].username").value(USER_USERNAME))
-        .andExpect(jsonPath("$[3].id").value(ids.get(ISLE_USERNAME)))
+        .andExpect(jsonPath("$[3].id").value(ids.get(ISLE_USER_ID)))
         .andExpect(jsonPath("$[3].username").value(ISLE_USERNAME));
   }
 
@@ -1209,10 +1213,10 @@ class MeasureshelterApplicationTest {
   @DisplayName("56. User - GET user by valid id")
   void getUserByValidId() throws Exception {
     mockMvc
-        .perform(get("/user/" + ids.get(ISLE_USERNAME)).headers(HTTP_HEADERS))
+        .perform(get("/user/" + ids.get(ISLE_USER_ID)).headers(HTTP_HEADERS))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(ids.get(ISLE_USERNAME)))
+        .andExpect(jsonPath("$.id").value(ids.get(ISLE_USER_ID)))
         .andExpect(jsonPath("$.username").value(ISLE_USERNAME));
   }
 
@@ -1295,7 +1299,7 @@ class MeasureshelterApplicationTest {
             .content(body))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(ids.get(ISLE_USERNAME)));
+        .andExpect(jsonPath("$.id").value(ids.get(ISLE_USER_ID)));
   }
 
   @Test
@@ -1391,7 +1395,7 @@ class MeasureshelterApplicationTest {
   @DisplayName("66. User - PATCH trying to toggle role of a isle user by its id")
   void patchTryingToggleRoleOfAnIsleUserByItsId() throws Exception {
     mockMvc
-        .perform(patch("/user/" + ids.get(ISLE_USERNAME) + "/toggle/role")
+        .perform(patch("/user/" + ids.get(ISLE_USER_ID) + "/toggle/role")
             .headers(HTTP_HEADERS))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isForbidden())
@@ -1506,6 +1510,19 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").isNotEmpty())
+        .andExpect(jsonPath("$.isleId").value(ids.get(ISLE_USERNAME)))
+        .andExpect(jsonPath("$.airTemp").value(MEASURE_DTO.getAirTemp().toString()))
+        .andExpect(jsonPath("$.gndTemp").value(MEASURE_DTO.getGndTemp().toString()))
+        .andExpect(jsonPath("$.windSpeed").value(MEASURE_DTO.getWindSpeed().toString()))
+        .andExpect(jsonPath("$.windDirection").value(MEASURE_DTO.getWindDirection().toString()))
+        .andExpect(jsonPath("$.irradiance").value(MEASURE_DTO.getIrradiance().toString()))
+        .andExpect(jsonPath("$.pressure").value(MEASURE_DTO.getPressure().toString()))
+        .andExpect(jsonPath("$.airHumidity").value(MEASURE_DTO.getAirHumidity().toString()))
+        .andExpect(jsonPath("$.gndHumidity").value(MEASURE_DTO.getGndHumidity().toString()))
+        .andExpect(jsonPath("$.precipitation").value(MEASURE_DTO.getPrecipitation().toString()))
+        .andExpect(jsonPath("$.rainIntensity").value(MEASURE_DTO.getRainIntensity().toString()))
+        .andExpect(jsonPath("$.windSpeed").value(MEASURE_DTO.getWindSpeed().toString()))
         .andReturn();
 
     String contentAsString = mvcResult.getResponse().getContentAsString();
