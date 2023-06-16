@@ -1458,4 +1458,16 @@ class MeasureshelterApplicationTest {
             .headers(HTTP_HEADERS))
         .andExpect(status().isNoContent());
   }
+
+  @Test
+  @Order(72)
+  @DisplayName("72. User - DELETE by nonexisting id")
+  void deleteByNonexistingId() throws Exception {
+    mockMvc
+        .perform(delete("/user/" + NONEXISTING_ID)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("User not found"));
+  }
 }
