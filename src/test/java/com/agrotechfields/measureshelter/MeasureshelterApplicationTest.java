@@ -1238,4 +1238,24 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(ids.get(ADMIN_USERNAME)));
   }
+
+  @Test
+  @Order(60)
+  @DisplayName("60. User - PUT trying to change to an existing username")
+  void putTryingToChangeToAnExistingUsername() throws Exception {
+    UserDto userDto = new UserDto();
+    userDto.setUsername(USER_USERNAME);
+    userDto.setPassword(ADMIN_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(userDto);
+
+    mockMvc
+        .perform(put("/user")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.message").value("User already exists"));
+  }
 }
