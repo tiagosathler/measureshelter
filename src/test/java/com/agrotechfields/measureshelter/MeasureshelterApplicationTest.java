@@ -1278,4 +1278,24 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(ids.get(ISLE_USERNAME)));
   }
+
+  @Test
+  @Order(62)
+  @DisplayName("62. User - PUT updating a nonexisting isle user")
+  void putUpdatingANonexistingIsleUser() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber("ISLE567890");
+    isleUserDto.setPassword(ISLE_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(put("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
 }
