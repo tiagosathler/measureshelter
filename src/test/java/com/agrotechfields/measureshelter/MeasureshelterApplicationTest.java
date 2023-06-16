@@ -38,6 +38,7 @@ import com.agrotechfields.measureshelter.domain.User;
 import com.agrotechfields.measureshelter.dto.request.AuthDto;
 import com.agrotechfields.measureshelter.dto.request.IsleDto;
 import com.agrotechfields.measureshelter.dto.request.IsleUserDto;
+import com.agrotechfields.measureshelter.dto.request.MeasureDto;
 import com.agrotechfields.measureshelter.dto.request.UserDto;
 import com.agrotechfields.measureshelter.dto.response.IsleResponseDto;
 import com.agrotechfields.measureshelter.dto.response.TokenReponseDto;
@@ -53,6 +54,8 @@ import com.jayway.jsonpath.JsonPath;
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MeasureshelterApplicationTest {
+
+  private static final String MEASURE = "MEASURE";
 
   @Autowired
   private MockMvc mockMvc;
@@ -1448,7 +1451,7 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").isNotEmpty())
         .andReturn();
-    
+
     String contextAsString = mvcResult.getResponse().getContentAsString();
 
     String id = JsonPath.parse(contextAsString).read("$.id").toString();
@@ -1469,5 +1472,42 @@ class MeasureshelterApplicationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("User not found"));
+  }
+
+  @Test
+  @Order(73)
+  @DisplayName("73. Measure - POST creating a new measure")
+  void postCreatingANewMeasure() throws Exception {
+    setHeadersWithTokenByLogin(ISLE_USERNAME, ISLE_PASSWORD);
+
+    MeasureDto measureDto = new MeasureDto();
+    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
+    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
+    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
+    measureDto.setWindDirection(BigDecimal.valueOf(45));
+    measureDto.setIrradiance(BigDecimal.valueOf(1000.0));
+    measureDto.setPressure(BigDecimal.valueOf(1024.0));
+    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
+    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
+    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
+    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+
+    String body = objectMapper.writeValueAsString(measureDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+
+    String id = JsonPath.parse(contentAsString).read("$.id").toString();
+    
+    ids.put(MEASURE, id);
   }
 }
