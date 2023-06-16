@@ -1354,4 +1354,16 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.role").value(Role.ROLE_ADMIN.name()));
   }
+
+  @Test
+  @Order(65)
+  @DisplayName("65. User - PATCH toggling user role by its id to user role")
+  void patchTogglingUserRoleByItsIdToUserRole() throws Exception {
+    mockMvc
+        .perform(patch("/user/"+ ids.get(USER_USERNAME) + "/toggle/role")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.role").value(Role.ROLE_USER.name()));
+  }
 }
