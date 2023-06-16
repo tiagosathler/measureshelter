@@ -1844,4 +1844,88 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("windDirection: must not be null"));
   }
+
+  @Test
+  @Order(86)
+  @DisplayName("86. Measure - POST with irradiance less than the limit")
+  void postWithIrradianceLessThanTheLimit() throws Exception {
+    MeasureDto measureDto = new MeasureDto();
+    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
+    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
+    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
+    measureDto.setWindDirection(BigDecimal.valueOf(45));
+    measureDto.setIrradiance(BigDecimal.valueOf(-0.1));
+    measureDto.setPressure(BigDecimal.valueOf(1024.0));
+    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
+    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
+    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
+    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+
+    String body = objectMapper.writeValueAsString(measureDto);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("irradiance: must be greater than or equal to 0"));
+  }
+
+  @Test
+  @Order(87)
+  @DisplayName("87. Measure - POST with irradiance greater than the limit")
+  void postWithIrradianceGreaterThanTheLimit() throws Exception {
+    MeasureDto measureDto = new MeasureDto();
+    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
+    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
+    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
+    measureDto.setWindDirection(BigDecimal.valueOf(45));
+    measureDto.setIrradiance(BigDecimal.valueOf(1500.1));
+    measureDto.setPressure(BigDecimal.valueOf(1024.0));
+    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
+    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
+    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
+    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+
+    String body = objectMapper.writeValueAsString(measureDto);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("irradiance: must be less than or equal 1500"));
+  }
+
+  @Test
+  @Order(88)
+  @DisplayName("88. Measure - POST without irradiance")
+  void postWithoutIrradiance() throws Exception {
+    MeasureDto measureDto = new MeasureDto();
+    measureDto.setAirTemp(BigDecimal.valueOf(27.8));
+    measureDto.setGndTemp(BigDecimal.valueOf(31.2));
+    measureDto.setWindSpeed(BigDecimal.valueOf(4.2));
+    measureDto.setWindDirection(BigDecimal.valueOf(45));
+
+    measureDto.setPressure(BigDecimal.valueOf(1024.0));
+    measureDto.setAirHumidity(BigDecimal.valueOf(85.2));
+    measureDto.setGndHumidity(BigDecimal.valueOf(60.0));
+    measureDto.setPrecipitation(BigDecimal.valueOf(1.2));
+    measureDto.setRainIntensity(BigDecimal.valueOf(0.2));
+
+    String body = objectMapper.writeValueAsString(measureDto);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("irradiance: must not be null"));
+  }
 }
