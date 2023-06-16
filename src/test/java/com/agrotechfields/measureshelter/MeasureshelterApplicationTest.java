@@ -2101,4 +2101,67 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("rainIntensity: must not be null"));
   }
+
+  @Test
+  @Order(104)
+  @DisplayName("104. Measure - GET all measures")
+  void getAllMeasures() throws Exception {
+    mockMvc
+        .perform(get("/measure")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(ids.get(MEASURE)))
+        .andExpect(jsonPath("$[0].isleId").value(ids.get(ISLE_USERNAME)));
+  }
+
+  @Test
+  @Order(105)
+  @DisplayName("105. Measure - GET measure by id")
+  void getMeasureById() throws Exception {
+    mockMvc
+        .perform(get("/measure/" + ids.get(MEASURE))
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(ids.get(MEASURE)))
+        .andExpect(jsonPath("$.isleId").value(ids.get(ISLE_USERNAME)));
+  }
+
+  @Test
+  @Order(106)
+  @DisplayName("106. Measure - GET measure by nonexisting id")
+  void getMeasureByNonexistingId() throws Exception {
+    mockMvc
+        .perform(get("/measure/" + NONEXISTING_ID)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Measure not found"));
+  }
+
+  @Test
+  @Order(107)
+  @DisplayName("107. Measure - GET all measures by isle id")
+  void getAllMeasuresByIsleId() throws Exception {
+    mockMvc
+        .perform(get("/measure/isle/" + ids.get(ISLE_USERNAME))
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(ids.get(MEASURE)))
+        .andExpect(jsonPath("$[0].isleId").value(ids.get(ISLE_USERNAME)));
+  }
+
+  @Test
+  @Order(108)
+  @DisplayName("108. Measure - GET all measures by nonexisting isle id")
+  void getAllMeasuresByNonexistingIsleId() throws Exception {
+    mockMvc
+        .perform(get("/measure/isle/" + NONEXISTING_ID)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Isle not found"));
+  }
 }
