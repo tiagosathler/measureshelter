@@ -1970,4 +1970,61 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("gndHumidity: must not be null"));
   }
+
+  @Test
+  @Order(98)
+  @DisplayName("98. Measure - POST with precipitation less than the limit")
+  void postWithPrecipitationThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setPrecipitation(BigDecimal.valueOf(-0.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("precipitation: must be greater than or equal to 0"));
+  }
+
+  @Test
+  @Order(99)
+  @DisplayName("99. Measure - POST with precipitation greater than the limit")
+  void postWithPrecipitationGreaterThanTheLimit() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setPrecipitation(BigDecimal.valueOf(1000.1));
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("precipitation: must be less than or equal to 1000"));
+  }
+
+  @Test
+  @Order(100)
+  @DisplayName("100. Measure - POST without precipitation")
+  void postWithoutPrecipitation() throws Exception {
+    resetMeasureDto();
+    MEASURE_DTO.setPrecipitation(null);
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("precipitation: must not be null"));
+  }
 }
