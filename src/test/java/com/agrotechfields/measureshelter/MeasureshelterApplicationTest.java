@@ -2104,7 +2104,49 @@ class MeasureshelterApplicationTest {
 
   @Test
   @Order(104)
-  @DisplayName("104. Measure - GET all measures")
+  @DisplayName("104. Measure - POST trying to create a measure with disabled isle")
+  void postTryingToCreateAMeasureWithDisabledIsle() throws Exception {
+    // login with admin
+    setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
+
+    // disabling isle
+    mockMvc
+      .perform(patch("/isle/toggle/" + ids.get(ISLE_USERNAME)).headers(HTTP_HEADERS))
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isAccepted())
+      .andExpect(jsonPath("$.isItWorking").value("false"));
+
+    // login with isle
+    setHeadersWithTokenByLogin(ISLE_USERNAME, ISLE_PASSWORD);
+
+    resetMeasureDto();
+
+    String body = objectMapper.writeValueAsString(MEASURE_DTO);
+
+    // trying to create a new measure
+    mockMvc
+        .perform(post("/measure")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.message").value("This Isle doesn't working. It does not have permission to do this"));
+
+    // login with admin
+    setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
+
+    // enabling isle
+    mockMvc
+      .perform(patch("/isle/toggle/" + ids.get(ISLE_USERNAME)).headers(HTTP_HEADERS))
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isAccepted())
+      .andExpect(jsonPath("$.isItWorking").value("true"));
+  }
+  
+  @Test
+  @Order(105)
+  @DisplayName("105. Measure - GET all measures")
   void getAllMeasures() throws Exception {
     mockMvc
         .perform(get("/measure")
@@ -2116,8 +2158,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(105)
-  @DisplayName("105. Measure - GET measure by id")
+  @Order(106)
+  @DisplayName("106. Measure - GET measure by id")
   void getMeasureById() throws Exception {
     mockMvc
         .perform(get("/measure/" + ids.get(MEASURE))
@@ -2129,8 +2171,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(106)
-  @DisplayName("106. Measure - GET measure by nonexisting id")
+  @Order(107)
+  @DisplayName("107. Measure - GET measure by nonexisting id")
   void getMeasureByNonexistingId() throws Exception {
     mockMvc
         .perform(get("/measure/" + NONEXISTING_ID)
@@ -2141,8 +2183,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(107)
-  @DisplayName("107. Measure - GET all measures by isle id")
+  @Order(108)
+  @DisplayName("108. Measure - GET all measures by isle id")
   void getAllMeasuresByIsleId() throws Exception {
     mockMvc
         .perform(get("/measure/isle/" + ids.get(ISLE_USERNAME))
@@ -2154,8 +2196,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(108)
-  @DisplayName("108. Measure - GET all measures by nonexisting isle id")
+  @Order(109)
+  @DisplayName("109. Measure - GET all measures by nonexisting isle id")
   void getAllMeasuresByNonexistingIsleId() throws Exception {
     mockMvc
         .perform(get("/measure/isle/" + NONEXISTING_ID)
@@ -2166,8 +2208,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(109)
-  @DisplayName("109. Measure - PUT updating measure by its id")
+  @Order(110)
+  @DisplayName("110. Measure - PUT updating measure by its id")
   void putUpdatingMeasureByItsId() throws Exception {
     setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
 
@@ -2187,8 +2229,8 @@ class MeasureshelterApplicationTest {
   }
 
   @Test
-  @Order(110)
-  @DisplayName("110. Measure - DELETE by id")
+  @Order(111)
+  @DisplayName("111. Measure - DELETE by id")
   void deleteById() throws Exception {
     resetMeasureDto();
 
