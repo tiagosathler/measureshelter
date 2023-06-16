@@ -1258,4 +1258,24 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.message").value("User already exists"));
   }
+
+  @Test
+  @Order(61)
+  @DisplayName("61. User - PUT updating an existing isle user")
+  void putUpdatingAnExistingIsleUser() throws Exception {
+    IsleUserDto isleUserDto = new IsleUserDto();
+    isleUserDto.setSerialNumber(ISLE_USERNAME);
+    isleUserDto.setPassword(ISLE_PASSWORD);
+
+    String body = objectMapper.writeValueAsString(isleUserDto);
+
+    mockMvc
+        .perform(put("/user/isle")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(ids.get(ISLE_USERNAME)));
+  }
 }
