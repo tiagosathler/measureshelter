@@ -5,7 +5,6 @@ import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
 import com.agrotechfields.measureshelter.dto.request.IsleUserDto;
 import com.agrotechfields.measureshelter.dto.request.UserDto;
-import com.agrotechfields.measureshelter.exception.DivergentSerialNumberException;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.InvalidIdException;
@@ -90,10 +89,9 @@ public class UserService implements UserDetailsService {
    * @return the user
    * @throws EntityNotFoundException the entity not found exception
    * @throws EntityAlreadyExistsException the entity already exists exception
-   * @throws DivergentSerialNumberException the divergent serial number exception
    */
   public User registerIsleUser(IsleUserDto isleUserDto)
-      throws EntityNotFoundException, EntityAlreadyExistsException, DivergentSerialNumberException {
+      throws EntityNotFoundException, EntityAlreadyExistsException {
     Optional<Isle> foundIsle = isleRepository.findBySerialNumber(isleUserDto.getSerialNumber());
 
     if (foundIsle.isEmpty()) {
@@ -146,13 +144,12 @@ public class UserService implements UserDetailsService {
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   public User updateContextUser(UserDto userDto) throws EntityAlreadyExistsException {
+    User contextUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Optional<User> foundUser = userRepository.findByUsername(userDto.getUsername());
 
-    if (foundUser.isPresent()) {
+    if (foundUser.isPresent() && !foundUser.get().getUsername().equals(contextUser.getUsername())) {
       throw new EntityAlreadyExistsException("User");
     }
-
-    User contextUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     contextUser.setUsername(userDto.getUsername());
     contextUser.setPassword(passwordEncoder.encode(userDto.getPassword()));

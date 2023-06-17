@@ -5,7 +5,6 @@ import com.agrotechfields.measureshelter.domain.User;
 import com.agrotechfields.measureshelter.dto.request.IsleUserDto;
 import com.agrotechfields.measureshelter.dto.request.UserDto;
 import com.agrotechfields.measureshelter.dto.response.UserResponseDto;
-import com.agrotechfields.measureshelter.exception.DivergentSerialNumberException;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.InvalidIdException;
@@ -80,7 +79,7 @@ public class UserController {
   @PostMapping("/isle")
   public ResponseEntity<UserResponseDto> registerIsle(
       @RequestBody @Valid IsleUserDto registerIsleDto)
-      throws EntityAlreadyExistsException, EntityNotFoundException, DivergentSerialNumberException {
+      throws EntityAlreadyExistsException, EntityNotFoundException {
     User user = userService.registerIsleUser(registerIsleDto);
     return ResponseEntity.created(buildUri(user.getId().toString())).body(convertToDto(user));
   }

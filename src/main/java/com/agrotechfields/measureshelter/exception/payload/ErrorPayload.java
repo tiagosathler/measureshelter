@@ -47,15 +47,6 @@ public class ErrorPayload implements Serializable {
   }
 
   /**
-   * Sets the status.
-   *
-   * @param status the new status
-   */
-  public void setStatus(Integer status) {
-    this.status = status;
-  }
-
-  /**
    * Gets the error.
    *
    * @return the error
@@ -65,30 +56,12 @@ public class ErrorPayload implements Serializable {
   }
 
   /**
-   * Sets the error.
-   *
-   * @param error the new error
-   */
-  public void setError(String error) {
-    this.error = error;
-  }
-
-  /**
    * Gets the message.
    *
    * @return the message
    */
   public String getMessage() {
     return message;
-  }
-
-  /**
-   * Sets the message.
-   *
-   * @param message the new message
-   */
-  public void setMessage(String message) {
-    this.message = message;
   }
 
   /**

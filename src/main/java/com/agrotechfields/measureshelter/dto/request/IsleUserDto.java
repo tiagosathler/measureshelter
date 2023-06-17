@@ -2,6 +2,7 @@ package com.agrotechfields.measureshelter.dto.request;
 
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.domain.User;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -12,13 +13,13 @@ import jakarta.validation.constraints.Size;
 public class IsleUserDto {
 
   /** The serial number. */
-  @NotEmpty
+  @NotBlank
   @Pattern(regexp = "^[A-Z0-9]{10}$",
       message = "must be 10 digits including numbers and capital letters")
   private String serialNumber;
 
   /** The password. */
-  @NotEmpty @Size(min = 5, max = 14)
+  @NotBlank @Size(min = 5, max = 14)
   private String password;
   
   /** The role. */
