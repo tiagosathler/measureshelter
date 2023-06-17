@@ -50,7 +50,7 @@ import com.jayway.jsonpath.JsonPath;
 @Testcontainers
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class MeasureshelterApplicationTest implements resetIsleDto {
+class MeasureshelterApplicationTest {
   @Autowired
   private MockMvc mockMvc;
 
