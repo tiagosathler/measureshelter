@@ -26,6 +26,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.http.HttpStatus;
 
 @DisplayName("Unit tests not covered by integration tests")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -446,13 +447,10 @@ class MeasureshelterUnitTest {
   @Order(21)
   @DisplayName("21. Testing ErrorPayload by constructor")
   void testingErrorPayloadByConstructor() {
-    ErrorPayload error = new ErrorPayload(null, null);
-    error.setError("someerror");
-    error.setMessage("somemessage");
-    error.setStatus(400);
+    ErrorPayload error = new ErrorPayload("somemessage", HttpStatus.BAD_REQUEST);
 
-    assertEquals("someerror", error.getError());
     assertEquals("somemessage", error.getMessage());
+    assertEquals("BAD_REQUEST", error.getError());
     assertEquals(400, error.getStatus());
     assertNotNull(error.getTimestamp());
   }
