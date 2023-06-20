@@ -56,14 +56,16 @@ public class UserController {
    *
    * @param userDto the user dto
    * @param isAdmin the is admin boolean parameter
+   * @param isSat the is satellite boolean parameter
    * @return the response entity with new user
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
   @PostMapping
   public ResponseEntity<UserResponseDto> create(@Valid @RequestBody UserDto userDto,
-      @RequestParam(name = "isAdmin", defaultValue = "false", required = false) Boolean isAdmin)
+      @RequestParam(name = "isAdmin", defaultValue = "false", required = false) Boolean isAdmin,
+      @RequestParam(name = "isSat", defaultValue = "false", required = false) Boolean isSat)
       throws EntityAlreadyExistsException {
-    User user = userService.createUser(userDto, isAdmin);
+    User user = userService.createUser(userDto, isAdmin, isSat);
     return ResponseEntity.created(buildUri(user.getId().toString())).body(convertToDto(user));
   }
 
@@ -74,7 +76,6 @@ public class UserController {
    * @return the response entity with new user (isle user)
    * @throws EntityAlreadyExistsException the entity already exists exception
    * @throws EntityNotFoundException the entity not found exception
-   * @throws DivergentSerialNumberException the divergent serial number exception
    */
   @PostMapping("/isle")
   public ResponseEntity<UserResponseDto> registerIsle(
