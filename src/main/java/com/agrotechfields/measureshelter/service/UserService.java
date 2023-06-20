@@ -63,10 +63,12 @@ public class UserService implements UserDetailsService {
    *
    * @param userDto the user dto
    * @param isAdmin the is admin boolean
+   * @param isSat the is satellite boolean
    * @return the user
    * @throws EntityAlreadyExistsException the entity already exists exception
    */
-  public User createUser(UserDto userDto, boolean isAdmin) throws EntityAlreadyExistsException {
+  public User createUser(UserDto userDto, boolean isAdmin, boolean isSat)
+      throws EntityAlreadyExistsException {
     Optional<User> foundUser = userRepository.findByUsername(userDto.getUsername());
     if (foundUser.isPresent()) {
       throw new EntityAlreadyExistsException("User");
@@ -74,6 +76,8 @@ public class UserService implements UserDetailsService {
 
     if (isAdmin) {
       userDto.setRole(Role.ROLE_ADMIN);
+    } else if (isSat) {
+      userDto.setRole(Role.ROLE_SAT);
     }
 
     String encodedPassword = passwordEncoder.encode(userDto.getPassword());
@@ -197,9 +201,9 @@ public class UserService implements UserDetailsService {
     }
 
     User user = foundUser.get();
-    if (user.getRole().equals(Role.ROLE_ISLE)) {
+    if (user.getRole().equals(Role.ROLE_ISLE) || user.getRole().equals(Role.ROLE_SAT)) {
       throw new NotPermittedException(
-          "User '" + user.getUsername() + "' with role " + Role.ROLE_ISLE.name());
+          "User '" + user.getUsername() + "' with role " + user.getRole());
     }
 
     if (user.getRole().equals(Role.ROLE_USER)) {
