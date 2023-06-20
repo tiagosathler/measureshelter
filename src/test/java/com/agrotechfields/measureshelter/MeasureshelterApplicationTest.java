@@ -5,12 +5,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -87,12 +91,16 @@ class MeasureshelterApplicationTest {
 
   private static final String ISLE_USERNAME = "ISLE000001";
   private static final String ISLE_PASSWORD = "password";
+  
+  private static final String SAT_USERNAME = "satellite";
+  private static final String SAT_PASSWORD = "password";
 
   private static final String ANOTHER_ISLE = "ISLE000003";
 
   private static final String ISLE_USER_ID = "isleUserId";
 
   private static final String MEASURE = "MEASURE";
+  private static final String IMAGE = "image";
 
   private static final String NONEXISTING_ID = "648a5072cbe534d1d321f28d";
   private static final String INVALID_ID = "648a5072cbe";
@@ -148,6 +156,16 @@ class MeasureshelterApplicationTest {
     MEASURE_DTO.setGndHumidity(BigDecimal.valueOf(60.0));
     MEASURE_DTO.setPrecipitation(BigDecimal.valueOf(1.2));
     MEASURE_DTO.setRainIntensity(BigDecimal.valueOf(0.2));
+  }
+
+  private byte[] getMockImage() {
+    byte[] data = null;
+    try(FileInputStream fis = new FileInputStream("./src/test/images/example.png")) {
+      data = fis.readAllBytes();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return data;
   }
 
   @Test
@@ -2288,5 +2306,234 @@ class MeasureshelterApplicationTest {
         .andExpect(status().isNotFound())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.message").value("User not found"));
+  }
+
+  @Test
+  @Order(113)
+  @DisplayName("113. Image - POST creating new image")
+  void imagePostCreatingNewImage() throws Exception {
+    // creating a new satellite user
+    UserDto userDto = new UserDto(SAT_USERNAME, SAT_PASSWORD);
+    String body = objectMapper.writeValueAsString(userDto);
+
+    MvcResult mvcResult = mockMvc
+        .perform(post("/user?isSat=true")
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.role").value(Role.ROLE_SAT.name()))
+        .andReturn();
+
+    String contentAsString = mvcResult.getResponse().getContentAsString();
+    
+    String userId = JsonPath.parse(contentAsString).read("$.id").toString();
+    ids.put(SAT_USERNAME, userId);
+
+    // login with satellite user
+    setHeadersWithTokenByLogin(SAT_USERNAME, SAT_PASSWORD);
+
+    MockMultipartFile file =
+        new MockMultipartFile("file", "image01.png", "multipart/form-data", getMockImage());
+
+    // post a new image with mock image
+    mvcResult = mockMvc
+        .perform(multipart("/image")
+            .file(file)
+            .headers(HTTP_HEADERS)
+            .contentType(MediaType.MULTIPART_FORM_DATA))
+
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.name").value("image01.png"))
+        .andReturn();
+
+    contentAsString = mvcResult.getResponse().getContentAsString();
+
+    String imageId = JsonPath.parse(contentAsString).read("$.id").toString();
+    ids.put(IMAGE, imageId);
+  }
+
+  @Test
+  @Order(114)
+  @DisplayName("114. Image - POST with already existing file")
+  void imagePostWithAlreadyExistingFile() throws Exception {
+    MockMultipartFile file =
+        new MockMultipartFile("file", "image01.png", "multipart/form-data", getMockImage());
+
+    mockMvc
+        .perform(multipart("/image")
+            .file(file)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.message").value("Image with name' image01.png' already exists"));
+  }
+
+  @Test
+  @Order(115)
+  @DisplayName("115. Image - POST with invalid filename")
+  void imagePostWithInvalidFilename() throws Exception {
+    MockMultipartFile file =
+        new MockMultipartFile("file", "image 01.png", "multipart/form-data", getMockImage());
+
+    mockMvc
+        .perform(multipart("/image")
+            .file(file)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("The file name must have a pattern of one"
+            + " or more words, digits, hyphens, underscores and must have a 'png' extension"));
+  }
+
+  @Test
+  @Order(116)
+  @DisplayName("116. Image - POST without filename")
+  void imagePostWithoutFilename() throws Exception {
+    MockMultipartFile file =
+        new MockMultipartFile("file", getMockImage());
+
+    mockMvc
+        .perform(multipart("/image")
+            .file(file)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("The file name must have a pattern of one"
+            + " or more words, digits, hyphens, underscores and must have a 'png' extension"));
+  }
+
+  @Test
+  @Order(117)
+  @DisplayName("117. Image - POST without file")
+  void imagePostWithoutFile() throws Exception {
+    mockMvc
+        .perform(multipart("/image")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("Required part 'file' is not present."));
+  }
+
+  @Test
+  @Order(118)
+  @DisplayName("118. Image - POST without multipart")
+  void imagePostWithoutMultipart() throws Exception {
+    mockMvc
+        .perform(post("/image")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("Current request is not a multipart request"));
+  }
+
+  @Test
+  @Order(119)
+  @DisplayName("119. Image - POST with file size greater than the limit")
+  void imagePostWithFileSizeGreaterThanTheLimit() throws Exception {
+    Random random = new Random();
+    byte[] bytes = new byte[16*1024*1024];
+    random.nextBytes(bytes);
+
+    MockMultipartFile file =
+        new MockMultipartFile("file", "greater.png", "multipart/form-data", bytes);
+    System.out.println(file.getSize());
+
+    mockMvc
+        .perform(multipart("/image")
+            .file(file)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isPayloadTooLarge())
+        .andExpect(jsonPath("$.message").value("Payload document size is larger than maximum of 16777216."));
+  }
+
+  @Test
+  @Order(120)
+  @DisplayName("120. Image - GET all images")
+  void imageGetAllImages() throws Exception {
+    setHeadersWithTokenByLogin(ADMIN_USERNAME, ADMIN_PASSWORD);
+
+    mockMvc
+        .perform(get("/image")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(ids.get(IMAGE)))
+        .andExpect(jsonPath("$[0].name").value("image01.png"));
+  }
+
+  @Test
+  @Order(121)
+  @DisplayName("121. Image - GET image by id")
+  void imageGetImageById() throws Exception {
+    mockMvc
+        .perform(get("/image/id/" + ids.get(IMAGE))
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.IMAGE_PNG))
+        .andExpect(status().isOk())
+        .andExpect(content().bytes(getMockImage()));
+  }
+
+  @Test
+  @Order(122)
+  @DisplayName("121. Image - GET with nonexisting id")
+  void imageGetWithNonexistingId() throws Exception {
+    mockMvc
+        .perform(get("/image/id/" + NONEXISTING_ID)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Image not found"));
+  }
+
+  @Test
+  @Order(123)
+  @DisplayName("123. Image - GET with invalid id")
+  void imageGetWithInvalidId() throws Exception {
+    mockMvc
+        .perform(get("/image/id/" + INVALID_ID)
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(INVALID_ID + " is invalid Id"));
+  }
+
+  @Test
+  @Order(124)
+  @DisplayName("121. Image - GET image by name")
+  void imageGetImageByName() throws Exception {
+    mockMvc
+        .perform(get("/image/name/" + "image01.png")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.IMAGE_PNG))
+        .andExpect(status().isOk())
+        .andExpect(content().bytes(getMockImage()));
+  }
+
+  @Test
+  @Order(125)
+  @DisplayName("125. Image - GET with nonexisting filename")
+  void imageGetWithNonexistingFilename() throws Exception {
+    mockMvc
+        .perform(get("/image/name/notfound.png")
+            .headers(HTTP_HEADERS))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Image not found"));
+  }
+
+  @Test
+  @Order(126)
+  @DisplayName("126. Image - DELETE by id")
+  void imageDeleteById() throws Exception {
+    mockMvc
+        .perform(delete("/image/" + ids.get(IMAGE))
+            .headers(HTTP_HEADERS))
+        .andExpect(status().isNoContent());
   }
 }
