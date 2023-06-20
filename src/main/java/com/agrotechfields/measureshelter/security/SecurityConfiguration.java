@@ -43,6 +43,9 @@ public class SecurityConfiguration {
 
   /** The Constant MEASURE. */
   private static final String MEASURE = "/measure/**";
+  
+  /** The Constant IMAGE. */
+  private static final String IMAGE = "/image/**";
 
   /** The Constant ROLE_ADMIN. */
   private static final String ROLE_ADMIN = Role.ROLE_ADMIN.name();
@@ -52,6 +55,9 @@ public class SecurityConfiguration {
 
   /** The Constant ROLE_ISLE. */
   private static final String ROLE_ISLE = Role.ROLE_ISLE.name();
+
+  /** The Constant ROLE_SAT. */
+  private static final String ROLE_SAT = Role.ROLE_SAT.name();
 
   /**
    * Security filter chain.
@@ -102,6 +108,11 @@ public class SecurityConfiguration {
           req.requestMatchers(HttpMethod.GET, MEASURE).fullyAuthenticated();
           req.requestMatchers(HttpMethod.PUT, MEASURE).hasAuthority(ROLE_ADMIN);
           req.requestMatchers(HttpMethod.DELETE, MEASURE).hasAuthority(ROLE_ADMIN);
+
+          // Security authorities for IMAGE endpoints:
+          req.requestMatchers(HttpMethod.POST, IMAGE).hasAuthority(ROLE_SAT);
+          req.requestMatchers(HttpMethod.GET, IMAGE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
+          req.requestMatchers(HttpMethod.DELETE, IMAGE).hasAuthority(ROLE_ADMIN);
 
           // Security any authorities for others endpoints:
           req.anyRequest().authenticated();
