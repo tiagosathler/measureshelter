@@ -4,6 +4,7 @@ import com.agrotechfields.measureshelter.domain.Image;
 import com.agrotechfields.measureshelter.exception.EntityAlreadyExistsException;
 import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.repository.ImageRepository;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,9 @@ import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 /**
  * The Class ImageService.
@@ -32,13 +35,28 @@ public class ImageService {
    * @return the image
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws EntityAlreadyExistsException the entity already exists exception
+   * @throws ServletException the servlet exception
    */
   public Image createImage(String name, MultipartFile file)
-      throws IOException, EntityAlreadyExistsException {
+      throws IOException, EntityAlreadyExistsException, ServletException {
+    if (name.isBlank()) {
+      throw new MissingServletRequestParameterException("name", "String");
+    }
+
+    if (file.isEmpty()) {
+      throw new MissingServletRequestPartException("file");
+    }
+
+    String regex = "^[\\w\\d-]+\\.png$";
+    if (!name.matches(regex)) {
+      throw new ServletException("The 'name' parameter must match the pattern '<name>.png'");
+    }
+
     Optional<Image> foundImage = imageRepository.findByName(name);
     if (foundImage.isPresent()) {
       throw new EntityAlreadyExistsException("Image with name' " + name + "'");
     }
+
     Image image = new Image();
     image.setName(name);
     image.setImageData(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
