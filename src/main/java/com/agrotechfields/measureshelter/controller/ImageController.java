@@ -7,6 +7,7 @@ import com.agrotechfields.measureshelter.exception.EntityNotFoundException;
 import com.agrotechfields.measureshelter.exception.InvalidIdException;
 import com.agrotechfields.measureshelter.service.IdService;
 import com.agrotechfields.measureshelter.service.ImageService;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -99,12 +100,13 @@ public class ImageController {
    * @return the response entity
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws EntityAlreadyExistsException the entity already exists exception
+   * @throws ServletException the servlet exception
    */
   @PostMapping
   public ResponseEntity<ImageResponseDto> create(
       @RequestParam(name = "name", required = true) String name,
       @RequestParam(name = "file", required = true) MultipartFile file)
-      throws IOException, EntityAlreadyExistsException {
+      throws IOException, EntityAlreadyExistsException, ServletException {
     Image image = imageService.createImage(name, file);
     return ResponseEntity
         .created(buildUri(image.getName()))
