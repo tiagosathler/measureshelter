@@ -10,5 +10,7 @@ public enum Role {
   /** The role user. */
   ROLE_USER,
   /** The role isle. */
-  ROLE_ISLE;
+  ROLE_ISLE,
+  /** The role sat. */
+  ROLE_SAT;
 }
