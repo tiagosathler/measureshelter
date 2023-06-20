@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.agrotechfields.measureshelter.domain.Image;
 import com.agrotechfields.measureshelter.domain.Isle;
 import com.agrotechfields.measureshelter.domain.Measure;
 import com.agrotechfields.measureshelter.domain.Role;
@@ -20,6 +21,8 @@ import com.agrotechfields.measureshelter.dto.response.UserResponseDto;
 import com.agrotechfields.measureshelter.exception.payload.ErrorPayload;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Random;
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -453,5 +456,46 @@ class MeasureshelterUnitTest {
     assertEquals("BAD_REQUEST", error.getError());
     assertEquals(400, error.getStatus());
     assertNotNull(error.getTimestamp());
+  }
+
+  @Test
+  @Order(22)
+  @DisplayName("22. Testing Image by constructor")
+  void testingImageByConstructor() {
+    ObjectId id = new ObjectId();
+
+    byte[] bytes = new byte[8];
+    Random random = new Random();
+    random.nextBytes(bytes);
+    Binary binary = new Binary(bytes);
+
+    Image image = new Image(id, "filename", binary);
+
+    assertEquals(id, image.getId());
+    assertEquals("filename", image.getName());
+    assertEquals(binary, image.getImageData());
+    assertNotNull(image.getTimestamp());
+  }
+
+  @Test
+  @Order(23)
+  @DisplayName("23. Testing Image by noargs constructor")
+  void testingImageByNoargsConstructor() {
+    ObjectId id = new ObjectId();
+
+    byte[] bytes = new byte[8];
+    Random random = new Random();
+    random.nextBytes(bytes);
+    Binary binary = new Binary(bytes);
+
+    Image image = new Image();
+    image.setId(id);
+    image.setImageData(binary);
+    image.setName("filename");
+
+    assertEquals(id, image.getId());
+    assertEquals("filename", image.getName());
+    assertEquals(binary, image.getImageData());
+    assertNotNull(image.getTimestamp());
   }
 }
