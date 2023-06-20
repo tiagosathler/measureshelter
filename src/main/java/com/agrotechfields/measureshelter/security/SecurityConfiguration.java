@@ -98,14 +98,16 @@ public class SecurityConfiguration {
 
           // Security authorities for ISLE endpoints:
           req.requestMatchers(HttpMethod.POST, ISLE).hasAuthority(ROLE_ADMIN);
-          req.requestMatchers(HttpMethod.GET, ISLE).fullyAuthenticated();
+          req.requestMatchers(HttpMethod.GET, ISLE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER,
+              ROLE_ISLE);
           req.requestMatchers(HttpMethod.PUT, ISLE).hasAuthority(ROLE_ADMIN);
           req.requestMatchers(HttpMethod.PATCH, ISLE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
           req.requestMatchers(HttpMethod.DELETE, ISLE).hasAuthority(ROLE_ADMIN);
 
           // Security authorities for MEASURE endpoints:
           req.requestMatchers(HttpMethod.POST, MEASURE).hasAuthority(ROLE_ISLE);
-          req.requestMatchers(HttpMethod.GET, MEASURE).fullyAuthenticated();
+          req.requestMatchers(HttpMethod.GET, MEASURE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER,
+              ROLE_ISLE);
           req.requestMatchers(HttpMethod.PUT, MEASURE).hasAuthority(ROLE_ADMIN);
           req.requestMatchers(HttpMethod.DELETE, MEASURE).hasAuthority(ROLE_ADMIN);
 
