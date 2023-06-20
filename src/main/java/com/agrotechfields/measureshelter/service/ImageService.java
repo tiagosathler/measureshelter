@@ -13,9 +13,7 @@ import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 /**
  * The Class ImageService.
@@ -30,26 +28,21 @@ public class ImageService {
   /**
    * Creates the image.
    *
-   * @param name the name
-   * @param file the file
+   * @param file the MultipartFile
    * @return the image
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws EntityAlreadyExistsException the entity already exists exception
    * @throws ServletException the servlet exception
    */
-  public Image createImage(String name, MultipartFile file)
+  public Image createImage(MultipartFile file)
       throws IOException, EntityAlreadyExistsException, ServletException {
-    if (name.isBlank()) {
-      throw new MissingServletRequestParameterException("name", "String");
-    }
+    String name = file.getOriginalFilename();
+    String regex = "(?i)^[\\w\\d-]+\\.png$";
 
-    if (file.isEmpty()) {
-      throw new MissingServletRequestPartException("file");
-    }
-
-    String regex = "^[\\w\\d-]+\\.png$";
-    if (!name.matches(regex)) {
-      throw new ServletException("The 'name' parameter must match the pattern '<name>.png'");
+    if (name != null && !name.matches(regex)) {
+      throw new ServletException(
+          "The file name must have a pattern of one or more words,"
+          + " digits, hyphens, underscores and must have a 'png' extension");
     }
 
     Optional<Image> foundImage = imageRepository.findByName(name);
