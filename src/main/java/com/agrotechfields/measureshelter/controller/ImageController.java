@@ -46,26 +46,26 @@ public class ImageController {
   private ImageService imageService;
 
   /**
-   * Gets the all.
+   * Gets the all images.
    *
-   * @return the all
+   * @return all images
    */
   @GetMapping
-  public ResponseEntity<List<ImageResponseDto>> getAll() {
+  public ResponseEntity<List<ImageResponseDto>> getAllImages() {
     List<Image> images = imageService.findAllImages();
     return ResponseEntity.ok().body(convertToDto(images));
   }
 
   /**
-   * Gets the by id.
+   * Gets the image by id.
    *
    * @param id the id
-   * @return the by id
+   * @return the image by id
    * @throws InvalidIdException the invalid id exception
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/id/{id}")
-  public ResponseEntity<byte[]> getById(@PathVariable("id") String id)
+  public ResponseEntity<byte[]> getImageById(@PathVariable("id") String id)
       throws InvalidIdException, EntityNotFoundException {
     ObjectId objectId = idService.getObjectId(id);
     byte[] data = imageService.findImageById(objectId).getImageData().getData();
@@ -76,14 +76,14 @@ public class ImageController {
   }
 
   /**
-   * Gets the by name.
+   * Gets image by name.
    *
-   * @param name the name
-   * @return the by name
+   * @param name the string name
+   * @return the image by name
    * @throws EntityNotFoundException the entity not found exception
    */
   @GetMapping("/name/{name}")
-  public ResponseEntity<byte[]> getByName(@PathVariable("name") String name)
+  public ResponseEntity<byte[]> getImageByName(@PathVariable("name") String name)
       throws EntityNotFoundException {
     byte[] data = imageService.findImageByName(name).getImageData().getData();
     return ResponseEntity
@@ -93,36 +93,34 @@ public class ImageController {
   }
 
   /**
-   * Creates the.
+   * Creates the new image.
    *
-   * @param name the name
    * @param file the file
-   * @return the response entity
+   * @return the image response dto entity
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws EntityAlreadyExistsException the entity already exists exception
    * @throws ServletException the servlet exception
    */
   @PostMapping
-  public ResponseEntity<ImageResponseDto> create(
-      @RequestParam(name = "name", required = true) String name,
+  public ResponseEntity<ImageResponseDto> createImage(
       @RequestParam(name = "file", required = true) MultipartFile file)
       throws IOException, EntityAlreadyExistsException, ServletException {
-    Image image = imageService.createImage(name, file);
+    Image image = imageService.createImage(file);
     return ResponseEntity
         .created(buildUri(image.getName()))
         .body(convertToDto(image));
   }
 
   /**
-   * Delete.
+   * Delete image by id.
    *
-   * @param id the id
+   * @param id the string id 
    * @return the response entity
    * @throws EntityNotFoundException the entity not found exception
    * @throws InvalidIdException the invalid id exception
    */
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> delete(@PathVariable("id") String id)
+  public ResponseEntity<String> deleteImageById(@PathVariable("id") String id)
       throws EntityNotFoundException, InvalidIdException {
     ObjectId objectId = idService.getObjectId(id);
     imageService.deleteImageById(objectId);
@@ -132,7 +130,7 @@ public class ImageController {
   /**
    * Builds the uri.
    *
-   * @param objectId the ObjectId
+   * @param name the name
    * @return the uri
    */
   private URI buildUri(String name) {
@@ -156,8 +154,8 @@ public class ImageController {
   /**
    * Convert to dto.
    *
-   * @param images the images
-   * @return the list
+   * @param images the list of images
+   * @return the impage response dto list
    */
   private List<ImageResponseDto> convertToDto(List<Image> images) {
     return images.stream().map(ImageResponseDto::new).toList();
