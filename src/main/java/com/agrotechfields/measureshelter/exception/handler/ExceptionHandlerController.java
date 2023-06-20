@@ -9,6 +9,7 @@ import com.auth0.jwt.exceptions.IncorrectClaimException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import jakarta.servlet.ServletException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,8 +18,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 /**
  * The Class ExceptionHandlerController.
@@ -168,13 +173,54 @@ public class ExceptionHandlerController {
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<ErrorPayload> handleHttpRequestMethodNotSupported(
       HttpRequestMethodNotSupportedException e) {
-    HttpStatus httpStatus = HttpStatus.NOT_IMPLEMENTED;
+    HttpStatus httpStatus = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
     String msg = e.getMessage();
     return buildResponse(msg, httpStatus);
   }
 
   /**
-   * Handle generic error.
+   * Handle multipart exception.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(MultipartException.class)
+  public ResponseEntity<ErrorPayload> handleMultipart(
+      MaxUploadSizeExceededException e) {
+    HttpStatus httpStatus = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+    String msg = e.getMessage();
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
+   * Handle servlet request.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(ServletException.class)
+  public ResponseEntity<ErrorPayload> handleServlet(ServletException e) {
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    String msg = e.getMessage();
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
+   * Handle max upload size exceeded exception.
+   *
+   * @param e the e
+   * @return the response entity
+   */
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ResponseEntity<ErrorPayload> handleMaxUploadSizeExceeded(
+      MaxUploadSizeExceededException e) {
+    HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+    String msg = e.getMessage();
+    return buildResponse(msg, httpStatus);
+  }
+
+  /**
+   * Handle generic error exception.
    *
    * @param e the e
    * @return the response entity
