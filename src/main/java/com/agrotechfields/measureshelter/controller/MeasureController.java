@@ -31,10 +31,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * The Class MeasureController.
  */
 @RestController
-@RequestMapping("${measure.endpoint}")
+@RequestMapping("${endpoint.measure}")
 public class MeasureController {
 
-  @Value("${measure.endpoint}")
+  @Value("${endpoint.measure}")
   private String endpoint;
 
   /** The isle service. */

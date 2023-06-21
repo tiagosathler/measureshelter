@@ -2,6 +2,7 @@ package com.agrotechfields.measureshelter.security;
 
 import com.agrotechfields.measureshelter.domain.Role;
 import com.agrotechfields.measureshelter.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,29 +24,27 @@ import org.springframework.security.web.header.writers.XXssProtectionHeaderWrite
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+  @Value("${endpoint.measure}")
+  private String measureEndpoint;
+
+  @Value("${endpoint.isle}")
+  private String isleEndpoint;
+
+  @Value("${endpoint.user}")
+  private String userEndpoint;
+
+  @Value("${endpoint.login}")
+  private String loginEndpoint;
+
+  @Value("${endpoint.image}")
+  private String imageEndpoint;
+
   /** The Constant HEALTH. */
   private static final String HEALTH = "/actuator/health";
 
   /** The Constant ACTUATOR. */
   private static final String ACTUATOR = "/actuator/**";
 
-  /** The Constant LOGIN. */
-  private static final String LOGIN = "/login";
-
-  /** The Constant USER. */
-  private static final String USER = "/user/**";
-
-  /** The Constant USER_ISLE. */
-  private static final String USER_ISLE = "/user/isle/**";
-
-  /** The Constant ISLE. */
-  private static final String ISLE = "/isle/**";
-
-  /** The Constant MEASURE. */
-  private static final String MEASURE = "/measure/**";
-  
-  /** The Constant IMAGE. */
-  private static final String IMAGE = "/image/**";
 
   /** The Constant ROLE_ADMIN. */
   private static final String ROLE_ADMIN = Role.ROLE_ADMIN.name();
@@ -71,6 +70,13 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
       JwtSecurityFilter jwtSecurityFilter, UserService userService) throws Exception {
+    final String login = loginEndpoint;
+    final String user = userEndpoint + "/**";
+    final String userIsle = userEndpoint + "/isle/**";
+    final String isle = isleEndpoint + "/**";
+    final String measure = measureEndpoint + "/**";
+    final String image = imageEndpoint + "/**";
+
     return httpSecurity
         .headers(h -> {
           h.frameOptions(f -> f.sameOrigin());
@@ -83,38 +89,38 @@ public class SecurityConfiguration {
         .authorizeHttpRequests(req -> {
           // Permit all for HEALTH and LOGIN endpoints:
           req.requestMatchers(HttpMethod.GET, HEALTH).permitAll();
-          req.requestMatchers(HttpMethod.POST, LOGIN).permitAll();
+          req.requestMatchers(HttpMethod.POST, login).permitAll();
 
           // Security authority for ACTUATOR endpoints:
           req.requestMatchers(ACTUATOR).hasAuthority(ROLE_ADMIN);
 
           // Security authorities for USER endpoints:
-          req.requestMatchers(HttpMethod.POST, USER).hasAuthority(ROLE_ADMIN);
-          req.requestMatchers(HttpMethod.GET, USER).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
-          req.requestMatchers(HttpMethod.PUT, USER_ISLE).hasAuthority(ROLE_ADMIN);
-          req.requestMatchers(HttpMethod.PUT, USER).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
-          req.requestMatchers(HttpMethod.PATCH, USER).hasAuthority(ROLE_ADMIN);
-          req.requestMatchers(HttpMethod.DELETE, USER).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.POST, user).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.GET, user).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
+          req.requestMatchers(HttpMethod.PUT, userIsle).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.PUT, user).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
+          req.requestMatchers(HttpMethod.PATCH, user).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.DELETE, user).hasAuthority(ROLE_ADMIN);
 
           // Security authorities for ISLE endpoints:
-          req.requestMatchers(HttpMethod.POST, ISLE).hasAuthority(ROLE_ADMIN);
-          req.requestMatchers(HttpMethod.GET, ISLE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER,
+          req.requestMatchers(HttpMethod.POST, isle).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.GET, isle).hasAnyAuthority(ROLE_ADMIN, ROLE_USER,
               ROLE_ISLE);
-          req.requestMatchers(HttpMethod.PUT, ISLE).hasAuthority(ROLE_ADMIN);
-          req.requestMatchers(HttpMethod.PATCH, ISLE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
-          req.requestMatchers(HttpMethod.DELETE, ISLE).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.PUT, isle).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.PATCH, isle).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
+          req.requestMatchers(HttpMethod.DELETE, isle).hasAuthority(ROLE_ADMIN);
 
           // Security authorities for MEASURE endpoints:
-          req.requestMatchers(HttpMethod.POST, MEASURE).hasAuthority(ROLE_ISLE);
-          req.requestMatchers(HttpMethod.GET, MEASURE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER,
+          req.requestMatchers(HttpMethod.POST, measure).hasAuthority(ROLE_ISLE);
+          req.requestMatchers(HttpMethod.GET, measure).hasAnyAuthority(ROLE_ADMIN, ROLE_USER,
               ROLE_ISLE);
-          req.requestMatchers(HttpMethod.PUT, MEASURE).hasAuthority(ROLE_ADMIN);
-          req.requestMatchers(HttpMethod.DELETE, MEASURE).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.PUT, measure).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.DELETE, measure).hasAuthority(ROLE_ADMIN);
 
           // Security authorities for IMAGE endpoints:
-          req.requestMatchers(HttpMethod.POST, IMAGE).hasAuthority(ROLE_SAT);
-          req.requestMatchers(HttpMethod.GET, IMAGE).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
-          req.requestMatchers(HttpMethod.DELETE, IMAGE).hasAuthority(ROLE_ADMIN);
+          req.requestMatchers(HttpMethod.POST, image).hasAuthority(ROLE_SAT);
+          req.requestMatchers(HttpMethod.GET, image).hasAnyAuthority(ROLE_ADMIN, ROLE_USER);
+          req.requestMatchers(HttpMethod.DELETE, image).hasAuthority(ROLE_ADMIN);
 
           // Security any authorities for others endpoints:
           req.anyRequest().authenticated();

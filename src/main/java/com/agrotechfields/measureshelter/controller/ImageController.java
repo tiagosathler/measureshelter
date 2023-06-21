@@ -30,11 +30,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * The Class ImageController.
  */
 @RestController
-@RequestMapping(value = "${image.endpoint}")
+@RequestMapping(value = "${endpoint.image}")
 public class ImageController {
 
   /** The endpoint. */
-  @Value("${image.endpoint}")
+  @Value("${endpoint.image}")
   private String endpoint;
 
   /** The id service. */

@@ -36,11 +36,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * The Class UserController.
  */
 @RestController
-@RequestMapping("${user.endpoint}")
+@RequestMapping("${endpoint.user}")
 public class UserController {
 
   /** The endpoint. */
-  @Value("${user.endpoint}")
+  @Value("${endpoint.user}")
   private String endpoint;
 
   /** The user service. */
