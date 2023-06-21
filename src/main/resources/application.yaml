@@ -1,4 +1,6 @@
 spring:
+   application:
+      name: measureshelter
    servlet:
       multipart:
          enabled: true
@@ -6,7 +8,7 @@ spring:
          max-request-size: 16MB
    data:
       mongodb:
-         uri: mongodb://localhost:27017/measureshelter
+         uri: ${MONGO_URI:mongodb://localhost:27017/measureshelter}
 
 security:
    token:
