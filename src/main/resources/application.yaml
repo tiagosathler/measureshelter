@@ -1,0 +1,22 @@
+spring:
+   servlet:
+      multipart:
+         enabled: true
+         max-file-size: 16MB
+         max-request-size: 16MB
+   data:
+      mongodb:
+         uri: mongodb://localhost:27017/measureshelter
+
+security:
+   token:
+      secret: MySuperDifficultSecret
+      validity:
+         hours: 24
+
+endpoint:
+   login: /login
+   measure: /measure
+   isle: /isle
+   user: /user
+   image: /image
