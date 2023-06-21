@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -115,6 +116,11 @@ class MeasureshelterApplicationTest {
   private static final HttpHeaders HTTP_HEADERS = new HttpHeaders();
 
   private void insertAnAdminUserIntoTheDb() {
+    Optional<User> foundRoot = userRepository.findByUsername("root");
+    if (foundRoot.isPresent()) {
+      userRepository.delete(foundRoot.get());
+    }
+
     String encodedPassword = passwordEncoder.encode(ADMIN_PASSWORD);
     User user = new User(null, ADMIN_USERNAME, encodedPassword, Role.ROLE_ADMIN);
     userRepository.save(user);

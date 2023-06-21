@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -87,6 +88,11 @@ class MeasureshelterSecurityTest {
   private static final List<User> USERS = new ArrayList<>();
 
   private void insertUsersIntoTheDb() {
+    Optional<User> foundRoot = userRepository.findByUsername("root");
+    if (foundRoot.isPresent()) {
+      userRepository.delete(foundRoot.get());
+    }
+
     String adminEncodedPass = passwordEncoder.encode(ADMIN_PASSWORD);
     User adminUser = new User(null, ADMIN_USERNAME, adminEncodedPass, Role.ROLE_ADMIN);
 

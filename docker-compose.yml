@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+   measureshelter:
+      build:
+         context: .
+         target: production
+      ports:
+         - 8000:8000
+         - 8080:8080
+      environment:
+         - MONGO_URI=mongodb://mongo_db:27017/measureshelter
+      depends_on:
+         mongo_db:
+            condition: service_healthy
+         tests:
+            condition: service_completed_successfully
+      healthcheck:
+         test: "curl --fail --silent localhost:8081/actuator/health | grep UP || exit 1"
+         interval: 20s
+         timeout: 5s
+         retries: 5
+         start_period: 40s
+
+   # ref: https://java.testcontainers.org/supported_docker_environment/continuous_integration/dind_patterns/
+   tests:
+      image: maven:3
+      stop_signal: SIGKILL
+      stdin_open: true
+      tty: true
+      working_dir: $PWD
+      environment:
+         - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+         - TESTCONTAINERS_RYUK_DISABLED=true
+      volumes:
+         - $PWD:$PWD
+         - /var/run/docker.sock:/var/run/docker.sock
+         # Maven cache (optional)
+         - ~/.m2:/root/.m2
+      command: mvn test
+
+   mongo_db:
+      image: "mongo:latest"
+      ports:
+         - 27017:27017
+      healthcheck:
+         test: echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:27017/test --quiet
+         interval: 3s
+         timeout: 10s
+         retries: 3
+      restart: always
