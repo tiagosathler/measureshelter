@@ -6,6 +6,7 @@ import com.agrotechfields.measureshelter.dto.response.TokenReponseDto;
 import com.agrotechfields.measureshelter.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * The Class Login.
  */
 @RestController
-@RequestMapping("/login")
+@RequestMapping(value = "${endpoint.login}")
 public class Login {
 
   /** The authentication manager. */

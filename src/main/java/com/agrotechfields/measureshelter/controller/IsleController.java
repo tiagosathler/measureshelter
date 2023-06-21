@@ -32,10 +32,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * The Class IsleController.
  */
 @RestController
-@RequestMapping(value = "${isle.endpoint}")
+@RequestMapping(value = "${endpoint.isle}")
 public class IsleController {
 
-  @Value("${isle.endpoint}")
+  @Value("${endpoint.isle}")
   private String endpoint;
 
   /** The service. */
