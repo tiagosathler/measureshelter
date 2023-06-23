@@ -4,12 +4,6 @@ Este projeto é uma **API REST** em *Java / Spring Boot*, desenvolvido individua
 apresentação do desafio final no **Curso de Aceleração Java** da
 **[Trybe](https://www.betrybe.com/).**
 
----
-
-## 📜 Sumário
-
----
-
 ## ℹ️ Contexto
 
 A empresa **AgroTech Fields**[^1] é líder de mercado em soluções tecnológicas para o
@@ -68,8 +62,7 @@ Ambiente de desenvolvimento:
 
 ## 🪵 Recursos
 
-> O detalhamento dos recursos é mostrado na
-> seção [Detalhamento dos recursos](#️👁️‍🗨️️-detalhamento-dos-recursos)
+> Os recursos são detalhados na seção **Detalhamento dos recursos**.
 
 ### Login
 
@@ -77,18 +70,19 @@ Ambiente de desenvolvimento:
 
 ### Usuário (*user*)
 
+* Criar um usuário do tipo administrativo, comum ou satélite;
 * Listar todos os usuários;
 * Buscar um usuário pelo *id*;
-* Criar um usuário do tipo administrativo, comum ou satélite;
 * Registrar uma ilha existente, criando um usuário do tipo ilha;
-* Atualizar o usuário;
+* Atualizar o usuário autenticado / autorizado;
 * Atualizar a senha de um usuário do tipo ilha;
-* Alternar o tipo do usuário (admistrativo / comum) pelo *id*;
-* Alternar a habilitação do usuário (ativado / desativado) pelo *id*;*  * Apagar um usário pelo
-  *id*.
+* Alternar o tipo do usuário (administrativo / comum) pelo *id*;
+* Alternar a habilitação do usuário (ativado / desativado) pelo *id*;
+* Apagar um usuário pelo *id*.
 
 #### Ilha (*isle*)
 
+* Criar uma ilha;
 * Listar todas as ilhas;
 * Buscar uma ilha pelo *id*;
 * Buscar uma ilha pelo *serial number*;
@@ -98,6 +92,7 @@ Ambiente de desenvolvimento:
 
 #### Medição (*measure*)
 
+* Criar uma medição;
 * Listar todas as medições;
 * Buscar uma medição pelo *id*;
 * Buscar todas as medições de uma ilha pelo seu *id*;
@@ -106,16 +101,17 @@ Ambiente de desenvolvimento:
 
 ### Imagens (*image*)
 
+* Criar uma imagem;
 * Listar todas as imagens;
 * Buscar uma imagem pelo *id*;
-* Buscar uma imgagem pelo *filename.png*;
+* Buscar uma imagem pelo *filename.png*;
 * Apagar uma imagem pelo *id*.
 
 ---
 
 ## 🚀 Execução
 
-Você pode clonar este projeto para executá-lo em sua máquina.
+Clone este projeto para executá-lo em sua máquina.
 
 ```
 git clone git@github.com:tiagosathler/measureshelter.git
@@ -132,7 +128,7 @@ versão 1.29.
 
 > 💡 **_Dica_**: Para testar a API use o [Postman](https://www.postman.com/). Use o arquivo **Json**
 > com a coleção de todos os recurso disponíveis, basta importá-lo:
-> [measureshelter.json](https://github.com/tiagosathler/measureshelter/tree/master/postman/measureshelter.json].
+> [measureshelter.json](https://github.com/tiagosathler/measureshelter/blob/master/postman/measureshelter.json).
 
 ### 🐳 Usando Docker
 
@@ -206,8 +202,6 @@ também testes unitários das classes de domínio e DTO.
 
 ### 1. Login
 
-<br>
-
 #### 1.1. Efetuar login
 
 ```http
@@ -232,7 +226,7 @@ POST /login
       Restrições:
         * *username*: não pode ser nulo ou vazio;
         * *password*: não pode ser nulo ou vazio;
-        * verifica se o usuário existe no banco de dados
+        * verifica se o usuário existe no banco de dados e está habilitado
 
 * Response (application/json)
     * Status: `200 Ok`
@@ -250,8 +244,6 @@ POST /login
 ### 2. User
 
 Gerenciamento dos usuários.
-
-<br>
 
 #### 2.1. Criar usuário comum:
 
@@ -278,7 +270,7 @@ POST /user
       ```
       Restrições:
         * *username*: não pode ser nulo ou vazio, deve ter entre 4 a 10 caracteres, não pode ter
-          o padrão de um número serial;
+          o padrão de um número serial (será visto a seguir);
         * *password*: não pode ser nulo ou vazio, deve ter entre 6 a 12 caracteres;
         * verifica se já existe algum usuário com o mesmo *username*.
 
@@ -403,14 +395,14 @@ POST /user?isSat=true
 #### 2.4. Criar usuário registrando uma Ilha existente:
 
 ```http
-GET /user
+POST /user/isle
 ```
 
 * Permissões: **ROLE_ADMIN**
 
 <details>
   <summary>
-    Adiciona um usuário e senha do tipo ROLE_ISLE ao banco de dados (registrando ilha existente).
+    Adiciona um usuário e senha do tipo ROLE_ISLE ao banco de dados (registrando a ilha existente).
   </summary><br>
 
 * Request (application/json)
@@ -741,8 +733,6 @@ DELETE /user/{id}
 
 Gerenciamento das ilhas.
 
-<br>
-
 #### 3.1. Criar ilha
 
 ```http
@@ -777,8 +767,8 @@ POST /isle
         * *latitude*: não pode ser nulo ou vazio, um número decimal de -90 a 90 (excluding);
         * *longitude*: não pode ser nulo ou vazio, um número decimal de -180 a 180 (excluding);
         * *altitude*: não pode ser nulo ou vazio, um número decimal positivo;
-        * *samplingInterval*: opcional, um número inteiro entre 1 a 3600 (valor default 5
-          minutos);
+        * *samplingInterval*: tempo de amostragem é opcional, um número inteiro entre 1 a 3600
+          (valor padrão é de 5 minutos);
         * verifica se já existe alguma ilha com o mesmo *serialNumber*.
 
 * Response (application/json)
@@ -804,7 +794,7 @@ POST /isle
 #### 3.2. Buscar todas as ilhas:
 
 ```http
-GET /isle/serial/{serialNumber}
+GET /isle
 ```
 
 * Permissões: **ROLE_ADMIN**, **ROLE_USER** e **ROLE_ISLE**
@@ -936,7 +926,7 @@ PUT /isle/{id}
 
 <details>
   <summary>
-    Atualiza uma ilha (<i>isle</i>) pelo seu <i>id</i> ao banco de dados.
+    Atualiza uma ilha (<i>isle</i>) pelo seu <i>id</i> no banco de dados.
 
   </summary><br>
 
@@ -960,8 +950,8 @@ PUT /isle/{id}
         * *latitude*: não pode ser nulo ou vazio, um número decimal de -90 a 90 (excluding);
         * *longitude*: não pode ser nulo ou vazio, um número decimal de -180 a 180 (excluding);
         * *altitude*: não pode ser nulo ou vazio, um número decimal positivo;
-        * *samplingInterval*: opcional, um número inteiro entre 1 a 3600 (valor default 5
-          minutos);
+        * *samplingInterval*: tempo de amostragem é opcional, um número inteiro entre 1 a 3600
+          (valor padrão de 5 minutos);
         * verifica se já existe alguma ilha com o mesmo *serialNumber*;
         * se a ilha já estiver cadastrada como usuário então atualiza também o *username* com o
           novo *serialNumber*.
@@ -1015,8 +1005,6 @@ DELETE /isle/{id}
 ### 4. Measure
 
 Gerenciamento das medições.
-
-<br>
 
 #### 4.1. Criar medição
 
@@ -1377,8 +1365,6 @@ DELETE /measure/{id}
 
 Gerenciamento das imagens geradas por satélite.
 
-<br>
-
 #### 5.1. Criar imagem
 
 ```http
@@ -1470,7 +1456,7 @@ GET /image/name/{filename}
 
 <details>
   <summary>
-    Busca uma imagem (<i>images</i>) do banco de dados pelo seu <i>filename</i>.
+    Busca uma imagem (<i>image</i>) do banco de dados pelo seu <i>filename</i>.
 
   </summary><br>
 
@@ -1496,7 +1482,7 @@ GET /image/id/{id}
 
 <details>
   <summary>
-    Busca uma imagem (<i>images</i>) do banco de dados pelo seu <i>id</i>.
+    Busca uma imagem (<i>image</i>) do banco de dados pelo seu <i>id</i>.
 
   </summary><br>
 
@@ -1522,7 +1508,7 @@ DELETE /image/{id}
 
 <details>
   <summary>
-    Apaga (<i>delete</i>) uma imagem (<i>images</i>) do banco de dados pelo seu <i>id</i>.
+    Apaga (<i>delete</i>) uma imagem (<i>image</i>) do banco de dados pelo seu <i>id</i>.
 
   </summary><br>
 
@@ -1560,11 +1546,11 @@ Trybe, ingressou na turma 14-A em junho de 2021 e formou em setembro de 2022 pel
 
 ## 🎁 Expressões de gratidão
 
-Agradeço a Trybe pela oportunidade de estudar ***Curso de Aceleração em Java***,
+Agradeço a Trybe pela oportunidade de estudar o ***Curso de Aceleração em Java***,
 na qual pude desenvolver 13 projetos agregadores (avaliados) e mais 47 exercícios durante os meses
 de Abril a Maio de 2023.
 
 ---
 
 > Template de referência para este documento
-> oferecido [aqui](https://gist.github.com/lohhans/f8da0b147550df3f96914d3797e9fb89)
+> oferecido [aqui](https://gist.github.com/lohhans/f8da0b147550df3f96914d3797e9fb89).
