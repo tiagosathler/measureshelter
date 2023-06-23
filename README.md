@@ -173,6 +173,8 @@ docker-compose down
 
 ## ⚙️ Executando os testes
 
+Foram desenvolvidos 126 testes de integração aos recursos da API, mais 23 testes de segurança (integração) e 23 testes unitários das classes de domínio e DTO. Ao todo, são 172 testes.
+   
 A maioria dos testes desenvolvidos são do tipo integração. É possível executá-los
 manualmente a partir de sua IDE. Não é necessário ter o Mongo instalado.
 
