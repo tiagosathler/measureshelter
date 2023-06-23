@@ -194,7 +194,9 @@ criar
 novos usuários, mesmo com um token válido. Para aumentar a cobertura dos testes, foram feitos
 também testes unitários das classes de domínio e DTO.
 
-> 🧪 *Este projeto alcançou mais 99% de cobertura!!*
+![](https://github.com/tiagosathler/measureshelter/blob/master/images/coverage.png)
+
+> 🧪 *Este projeto alcançou mais de 99% de cobertura!!*
 
 ---
 
