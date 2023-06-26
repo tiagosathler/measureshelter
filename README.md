@@ -45,7 +45,7 @@ pelo satélite etc.
 ## 🛠️ Tecnologias
 
 * Java 17.0.6 LTS
-* Spring 3.1.0 (Boot, Web, Actuator, Validation, Security, Devtools, Test, Data MongoDB)
+* Spring 3.1.0 (Boot, Web, Actuator, Validation, Security, Devtools, Test, Data MongoDB, Testcontainers)
 * Auth0 JWT 4.4.0
 * JUnit 5
 * Maven 3.9.1
@@ -202,7 +202,7 @@ também testes unitários das classes de domínio e DTO.
 
 ---
 
-## 👁️‍🗨️️ Detalhamento dos recursos
+## 👁️‍🗨 Detalhamento dos recursos
 
 ### 1. Login
 
